@@ -1,68 +1,52 @@
-# IBM Hackathon GitHub Project Template
+# DeploySure AI
 
-This GitHub project template is for IBM Hackathon projects. It includes pre-configured security files to help prevent accidental credential commits and potential account suspension during the hackathon.
+DeploySure AI is an AI-powered deployment risk analysis tool built for the IBM Watsonx Hackathon 2025.
 
-## 🚀 Quick Start
+## Overview
 
-1. **Use this template to create your project:**
-   - Click "Use this template" button above and select "Create a new repository"
-   - Name your repository
-   - Click "Create repository"
+DeploySure AI helps engineering teams identify deployment risks before they reach production. It analyses deployment configurations, compares them against historical deployment data, and generates actionable risk reports powered by IBM Watsonx.
 
-2. **Clone your new repository:**
+## Project Structure
+
+```
+deploysure-ai/
+├── frontend/        # Plain HTML/CSS/JS web interface
+├── backend/         # Go backend — REST API and Watsonx integration
+├── sample-app/      # Demo application used to showcase risk analysis
+├── docs/            # Architecture diagrams and design documents
+├── reports/         # Generated risk-analysis reports
+├── bob_sessions/    # Exported Bob AI session logs (required for submission)
+└── evidence/        # Demo screenshots and supporting evidence
+```
+
+## Getting Started
+
+1. Copy environment variables:
 
    ```bash
-   git clone https://github.com/HACKATHON-ORG/your-repo-name.git
-   cd your-repo-name
-   ```
-
-3. **Set up environment variables:**
-
-   ```bash
-   # Copy the example file
    cp .env.example .env
-
-   # Edit .env with your actual credentials
-   # Use your preferred editor (nano, vim, code, etc.)
-   nano .env
+   # Edit .env with your IBM Cloud and Watsonx credentials
    ```
 
-4. **Verify .gitignore is working:**
+2. Start the backend:
 
    ```bash
-   # This should NOT show .env file
-   git status
-
-   # This should confirm .env is ignored
-   git check-ignore -v .env
+   # Instructions will be added once the backend is implemented
    ```
 
-5. **Start developing!**
+3. Open `frontend/index.html` in your browser.
 
-## 🔒 Security Features
+## Security
 
-This template includes:
+See [SECURITY.MD](SECURITY.MD) for credential management guidelines. Never commit `.env` or any credentials.
 
-- **`.gitignore`** - Prevents committing credentials and live session files
-- **`.bobignore`** - Prevents AI assistants from logging credentials
-- **`.env.example`** - Template for your environment variables
+## Documentation
 
-## 📋 Before Every Commit
-
-Always run this checklist:
-
-- [ ] Reviewed `git diff` for sensitive data
-- [ ] No hardcoded API keys or passwords
-- [ ] `.env` file is NOT in staged changes
-- [ ] No files with "credential" or "secret" in name
-- [ ] Used environment variables for all credentials
-
-## 🆘 Need Help?
-
-- Read [SECURITY.md](SECURITY.MD) for detailed guidelines
-- Contact hackathon support through mentor channel
-- Ask in the hackathon Slack workspace
+- [BOB_USAGE.md](BOB_USAGE.md) – How Bob AI was used in this project
+- [PROBLEM_STATEMENT.md](PROBLEM_STATEMENT.md) – Problem being solved
+- [SOLUTION_STATEMENT.md](SOLUTION_STATEMENT.md) – Proposed solution
+- [DEMO_SCRIPT.md](DEMO_SCRIPT.md) – Walkthrough for live demo
 
 ---
 
-**Remember:** Security is everyone's responsibility. When in doubt, ask for help!
+IBM Watsonx Hackathon 2025

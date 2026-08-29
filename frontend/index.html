@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DeploySure AI</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>DeploySure AI</h1>
+    <p class="tagline">AI-powered deployment risk analysis and mitigation</p>
+  </header>
+
+  <main>
+    <section id="upload-section">
+      <h2>Analyze Deployment</h2>
+      <p>Upload your deployment configuration to receive an AI-generated risk report.</p>
+      <form id="analyze-form">
+        <label for="config-input">Deployment Config (YAML / JSON)</label>
+        <textarea id="config-input" name="config" rows="10" placeholder="Paste your deployment configuration here..."></textarea>
+        <button type="submit" id="analyze-btn">Analyze Risk</button>
+      </form>
+    </section>
+
+    <section id="results-section" hidden>
+      <h2>Risk Report</h2>
+      <div id="report-output"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>DeploySure AI &mdash; IBM Hackathon 2025</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
