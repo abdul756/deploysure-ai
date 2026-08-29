@@ -1,10 +1,12 @@
 # DeploySure AI
 
-DeploySure AI is an AI-powered deployment risk analysis tool built for the IBM Watsonx Hackathon 2025.
+DeploySure AI is an AI-powered deployment risk analysis tool built for the IBM TechXchange 2026 Pre-conference Dev Day Hackathon.
 
 ## Overview
 
-DeploySure AI helps engineering teams identify deployment risks before they reach production. It analyses deployment configurations, compares them against historical deployment data, and generates actionable risk reports powered by IBM Watsonx.
+DeploySure analyzes source code, tests, Dockerfiles, Kubernetes manifests and
+release documentation to identify release risks and documentation
+inconsistencies.
 
 ## Project Structure
 
@@ -48,5 +50,3 @@ See [SECURITY.MD](SECURITY.MD) for credential management guidelines. Never commi
 - [DEMO_SCRIPT.md](DEMO_SCRIPT.md) – Walkthrough for live demo
 
 ---
-
-IBM Watsonx Hackathon 2025
