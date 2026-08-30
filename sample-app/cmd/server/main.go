@@ -12,6 +12,8 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/joho/godotenv"
+
 	"github.com/abdul756/deploysure-ai/sample-app/internal/handlers"
 )
 
@@ -28,6 +30,13 @@ func buildServer(port string) *http.Server {
 }
 
 func main() {
+	// Load .env if present. In production (Kubernetes) the file will not exist
+	// and real environment variables are used instead — the error is intentionally
+	// ignored so the binary works in both environments.
+	if err := godotenv.Load(); err != nil {
+		log.Println("msg=\"no .env file found, using environment variables\"")
+	}
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"

@@ -19,5 +19,9 @@ func ReadinessHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(statusResponse{Status: "ready"}) //nolint:errcheck
+	w.WriteHeader(http.StatusOK)
+	if err := json.NewEncoder(w).Encode(statusResponse{Status: "ready"}); err != nil {
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
 }

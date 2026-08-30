@@ -4,7 +4,9 @@
 //
 //	go run ./backend/cmd/server
 //
-// Configuration is read exclusively from environment variables — no .env file.
+// Configuration is read from environment variables. A .env file in the working
+// directory is loaded automatically if present (local development). In production
+// the file will not exist and real environment variables are used instead.
 //
 // Environment variables:
 //
@@ -30,6 +32,8 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/joho/godotenv"
+
 	"github.com/YOUR-USERNAME/deploysure-ai/backend/internal/api"
 	"github.com/YOUR-USERNAME/deploysure-ai/backend/internal/config"
 	"github.com/YOUR-USERNAME/deploysure-ai/backend/internal/reports"
@@ -37,6 +41,13 @@ import (
 )
 
 func main() {
+	// Load .env if present. In production (Kubernetes) the file will not exist
+	// and real environment variables are used instead — the error is intentionally
+	// ignored so the binary works in both environments.
+	if err := godotenv.Load(); err != nil {
+		log.Println("level=info msg=\"no .env file found, using environment variables\"")
+	}
+
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("level=fatal msg=\"invalid configuration\" err=%q", err.Error())
