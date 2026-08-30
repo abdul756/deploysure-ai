@@ -2,19 +2,46 @@
 
 ## How IBM Bob 2.0 Was Used in DeploySure AI
 
-IBM Bob 2.0 was the core development and workflow-orchestration component of
-DeploySure AI. This document records every session in which Bob was used,
-covering all ten tasks from project scaffolding through final validation.
+IBM Bob 2.0 was the core development and workflow-orchestration tool used to
+build DeploySure AI. We started with the official IBM hackathon repository
+template and used Bob Agent mode to create the project structure while
+preserving the supplied `.gitignore`, `.bobignore`, `.env.example`, and
+`SECURITY.MD` controls. Bob's document understanding was used to read the
+requirements and release runbook and translate them into an implementation plan.
 
-> **Security note:** No credentials or secrets were shared with Bob at any
-> point. All prompts followed the safe-usage guidelines in
+Bob then created the synthetic Go sample application, Go report-serving
+backend, and lightweight HTML/CSS/JavaScript dashboard. For release analysis,
+Bob coordinated focused parallel reviews across Go code quality, unit-test
+coverage, Docker and Kubernetes configuration, and documentation-to-code
+consistency. The reviews produced structured JSON findings with severity,
+affected file, evidence, and recommended action. Bob consolidated these into
+the initial release-readiness report.
+
+IBM watsonx.ai with a Granite model was used to prioritise Bob's structured
+findings, explain operational impact, and recommend a remediation order. Bob
+remained responsible for inspecting and modifying the repository. Before
+editing the sample application, Bob created a remediation plan and waited for
+human approval. After approval, Bob implemented the selected fixes, ran
+`gofmt`, `go vet`, unit tests and coverage checks, and repeated the release
+analysis to produce the final before-and-after evidence.
+
+The public repository includes exported Bob task reports and PNG screenshots
+of the relevant Bob session summaries in the `bob_sessions/` folder, covering:
+scaffolding, documentation, sample application, parallel analysis, backend,
+watsonx integration, dashboard, remediation plan, remediation, and final
+validation.
+
+No credentials, client data, personal data, or confidential company
+information were provided to Bob or committed to the repository.
+
+> **Security note:** All prompts followed the safe-usage guidelines in
 > [SECURITY.MD](SECURITY.MD).
 
 ---
 
 ## Product Boundary
 
-IBM Bob IDE performs repository analysis, implementation, remediation and
+IBM Bob IDE performed repository analysis, implementation, remediation and
 validation.
 
 The web dashboard presents Bob-generated reports and calls watsonx.ai Granite.
@@ -30,7 +57,7 @@ Task 08 and held until Task 09 was triggered by explicit approval.
 
 ---
 
-## Features Demonstrated
+## Bob Features Demonstrated
 
 | Feature | Tasks |
 |---|---|
@@ -39,7 +66,7 @@ Task 08 and held until Task 09 was triggered by explicit approval.
 | Parallel subagents | 04, 10 |
 | Code generation | 03, 05, 07 |
 | API integration (watsonx.ai) | 06 |
-| Release analysis & planning | 08 |
+| Analysis and planning | 08 |
 | Human-approved remediation | 09 |
 | Final validation | 10 |
 
@@ -49,285 +76,281 @@ Task 08 and held until Task 09 was triggered by explicit approval.
 
 ### Task 01 — Project Scaffolding
 
-**Bob capability:** Agent mode  
-**Evidence:** `bob_sessions/task01_project_scaffolding_summary.md`  
-**Screenshots:** `bob_sessions/deploysure_task01_project_scaffolding_summary.png`
+**Bob capability:** Agent mode
+**Evidence:** `bob_sessions/task01_project_scaffolding_summary.md`
+**Screenshot:** `bob_sessions/deploysure_task01_project_scaffolding_summary.png`
 
 Bob scaffolded the entire repository from the official IBM Hackathon GitHub
 template. Actions taken:
 
-- Created `backend/`, `sample-app/`, `frontend/`, and empty top-level
-  directories with `.gitkeep` files.
+- Created `backend/`, `sample-app/`, `frontend/`, `docs/`, `reports/`,
+  `bob_sessions/`, and `evidence/` directories with `.gitkeep` files.
 - Generated `README.md`, `PROBLEM_STATEMENT.md`, `SOLUTION_STATEMENT.md`,
-  `DEMO_SCRIPT.md`, `BOB_USAGE.md`, and `SECURITY.MD`.
-- Produced `docs/architecture.md` and `docs/project-plan.md` capturing the
-  six-phase delivery plan and full component architecture (Bob orchestrator,
-  four specialized subagents, watsonx.ai Granite integration).
-- Confirmed all security files were unmodified from the template.
+  `DEMO_SCRIPT.md`, `BOB_USAGE.md`, and confirmed `SECURITY.MD` was
+  unmodified from the template.
+- Produced `docs/architecture.md` and `docs/implementation-plan.md`
+  capturing the delivery plan and component architecture.
 
 ---
 
 ### Task 02 — Document Understanding & Architecture
 
-**Bob capability:** Document understanding  
-**Evidence:** `bob_sessions/task02_document_understanding_summary.md`  
+**Bob capability:** Document understanding
+**Evidence:** `bob_sessions/task02_document_understanding_summary.md`
 **Screenshots:** `bob_sessions/task02_document_understanding_summary.png`,
 `bob_sessions/task02_document_understanding_prompt.png`
 
-Bob read the project brief and produced two design documents:
+Bob read the project requirements (`docs/requirements.md`) and release runbook
+(`docs/release-runbook.md`) and produced two design documents:
 
-- **`docs/project-plan.md`** — six-phase delivery plan (Phase 0 scaffold
-  through Phase 5 final validation), including seeded defects and timeline.
-- **`docs/architecture.md`** — full system overview covering all components:
-  Bob Agent (orchestrator), Code-Quality subagent, Test-Gap subagent, Docker
-  Review subagent, Kubernetes Review subagent, Docs-to-Code Consistency
-  subagent, and watsonx.ai Granite Integration; data flow and directory layout.
+- **`docs/architecture.md`** — full system overview: Bob Agent (orchestrator),
+  four specialised subagents (code quality, test coverage, deployment,
+  documentation consistency), watsonx.ai Granite integration, data flow, and
+  directory layout.
+- **`docs/implementation-plan.md`** — phased delivery plan covering project
+  scaffolding through final validation, including seeded defects and the
+  human-approval gate.
 
 Key design decisions captured:
-- watsonx.ai Granite-3-8B-Instruct selected as the AI model.
+- IBM Granite selected as the AI model via watsonx.ai.
 - Subagent findings aggregated into `reports/findings-before.json`.
 - Human-approved gate required before any remediation is applied.
 
 ---
 
-### Task 03 — Sample Application Build
+### Task 03 — Sample Application
 
-**Bob capability:** Code generation  
-**Evidence:** `bob_sessions/task03_sample_application_summary.md`  
+**Bob capability:** Code generation
+**Evidence:** `bob_sessions/task03_sample_application_summary.md`
 **Screenshots:** `bob_sessions/task03_sample_application_summary.png`,
 `bob_sessions/task03_sample_application_build_prompt.png`
 
-Bob generated the synthetic Go microservice under `sample-app/` with
-intentionally seeded defects for later detection:
+Bob generated the synthetic Go orders-API under `sample-app/` with
+intentionally seeded defects for later detection by the analysis subagents.
 
 **Files created:**
+
 - `sample-app/cmd/server/main.go`
 - `sample-app/internal/handlers/readiness.go`
 - `sample-app/internal/handlers/orders.go`
-- `sample-app/internal/store/orders.go`
+- `sample-app/internal/handlers/router.go`
+- `sample-app/deploy/Dockerfile`
+- `sample-app/deploy/deployment.yaml`
+- `sample-app/deploy/service.yaml`
 - `sample-app/go.mod`
-- `sample-app/Dockerfile`
-- `sample-app/k8s/deployment.yaml`
-- `sample-app/k8s/service.yaml`
+- `docs/requirements.md` and `docs/release-runbook.md` (spec documents)
 
-**Seeded defects (for Phase 2 detection):**
+**Seeded defects (for detection in Task 04):**
 
 | ID | Defect | Location |
 |---|---|---|
 | SD-01 / DP-002 | Floating `:latest` tag on builder stage | `Dockerfile` |
 | SD-02 / DP-001 | Missing `USER` directive — container runs as root | `Dockerfile` |
 | SD-03 / DC-001 | Missing `GET /health` endpoint | `handlers/` |
-| SD-04 / DC-003 | No pod-level `securityContext` (`runAsNonRoot`) | `k8s/deployment.yaml` |
-| SD-05 / DC-004 | No `livenessProbe` | `k8s/deployment.yaml` |
-| SD-06 / DC-005 | No resource `requests`/`limits` | `k8s/deployment.yaml` |
-| SD-07 / DC-006 | No `readOnlyRootFilesystem` | `k8s/deployment.yaml` |
+| SD-04 / DP-005 | No `livenessProbe` | `deployment.yaml` |
+| SD-05 / DP-006 | No pod-level `securityContext` (`runAsNonRoot`) | `deployment.yaml` |
+| SD-06 / DP-003/004 | No resource `requests`/`limits` | `deployment.yaml` |
+| SD-07 / DC-006 | No `readOnlyRootFilesystem` | `deployment.yaml` |
 | SD-08 / CQ-001 | `json.Encoder` error silently ignored | `handlers/readiness.go` |
-| SD-09 / CQ-003 | Invalid Go version in `go.mod` (`go 1.21.0` instead of `1.21`) | `go.mod` |
-
-All validation tests passed after generation.
+| SD-09 / CQ-003 | Invalid Go version in `go.mod` (`go 1.27.0`) | `go.mod` |
 
 ---
 
-### Task 04 — Parallel Initial Analysis
+### Task 04 — Parallel Analysis (Before)
 
-**Bob capability:** Parallel subagents  
-**Evidence:** `bob_sessions/task04_parallel_analysis_summary.md`  
-**Screenshots:** `bob_sessions/task04_parallel_analysis_summary.png`
+**Bob capability:** Parallel subagents
+**Evidence:** `bob_sessions/task04_parallel_analysis_summary.md`
+**Screenshot:** `bob_sessions/task04_parallel_analysis_summary.png`
 
-Bob spawned four independent specialized subagents simultaneously to analyse
+Bob spawned four independent specialised subagents simultaneously to analyse
 `sample-app/`:
 
 | Subagent | Findings | Key issues |
 |---|---|---|
-| Code Quality | 15 | Silent error, dead code, missing test coverage, invalid go.mod version |
-| Test Coverage | 8 | 0% `cmd/server` coverage, missing error-branch tests, no store tests |
+| Code Quality | 15 | Silent encoder error, dead config code, invalid `go.mod` version, missing `WriteHeader` |
+| Test Coverage | 8 | 0% `cmd/server` coverage, uncovered error branches, weak assertions |
 | Deployment (Docker + K8s) | 8 | Floating `:latest`, no `USER`, missing probes, no resource limits, no securityContext |
-| Documentation Consistency | 10 | Undocumented endpoints, `README` gaps, missing runbook cross-references |
+| Documentation Consistency | 10 | 5 runbook gate blockers, undocumented env vars, missing required tests |
 
 **Decision: ❌ BLOCKED — 5 blocker findings, not release-ready.**
 
 Files produced:
 - `reports/findings-before.json` (41 total findings)
+- `reports/code-findings-before.json`
+- `reports/test-findings-before.json`
+- `reports/deployment-findings-before.json`
+- `reports/document-findings-before.json`
 - `reports/release-readiness-before.md`
 - `reports/test-results-before.txt`
 
 ---
 
-### Task 05 — Go Backend Implementation
+### Task 05 — Go Backend
 
-**Bob capability:** Code generation and testing  
-**Evidence:** `bob_sessions/task05_backend_summary.md`  
-**Screenshots:** `bob_sessions/task05_backend_summary.png`
+**Bob capability:** Code generation
+**Evidence:** `bob_sessions/task05_backend_summary.md`
+**Screenshot:** `bob_sessions/task05_backend_summary.png`
 
 Bob implemented the full DeploySure Go backend under `backend/` using only
-`net/http` and standard-library packages.
+the standard library.
 
 **Packages and files:**
 
 | Package | Files | Responsibility |
 |---|---|---|
-| `config` | `config.go`, `config_test.go` | Env-var config, PORT validation, no `.env`, no credential logging |
-| `reports` | `models.go`, `service.go`, `service_test.go` | File-backed service; `safePath()` prevents `..` traversal |
-| `watsonx` | `client.go`, `client_test.go` | 30-second HTTP client, Granite prompt builder, credential safety |
-| `api` | `handler.go`, `handler_test.go`, `router.go`, `router_test.go` | All 8 REST handlers, logging middleware, static file serving |
-| `cmd/server` | `main.go` | Graceful shutdown via `signal.Notify` |
-| `cmd/analyze` | `main.go` | CLI tool: reads file arg or stdin |
-
-**Routes:**
-```
-GET  /health                    → {"status":"ok"}
-GET  /ready                     → {"status":"ready"}
-GET  /api/v1/findings/before    → []Finding (JSON)
-GET  /api/v1/findings/after     → []Finding (JSON)
-GET  /api/v1/reports/before     → {"content":"..."}
-GET  /api/v1/reports/after      → {"content":"..."}
-GET  /api/v1/comparison         → ComparisonResult
-POST /api/v1/granite/analyze    → {"analysis":"..."}
-GET  /                          → frontend/index.html
-GET  /styles.css                → frontend/styles.css
-GET  /app.js                    → frontend/app.js
-```
+| `config` | `config.go`, `config_test.go` | Env-var config, PORT validation, no credential logging |
+| `reports` | `models.go`, `service.go`, `service_test.go` | File-backed report service; `safePath()` prevents path traversal |
+| `watsonx` | `client.go`, `client_test.go` | IAM token exchange, Granite inference, credential safety |
+| `api` | `handler.go`, `handler_test.go`, `router.go`, `router_test.go` | REST handlers, logging middleware, static file serving |
+| `cmd/server` | `main.go` | Graceful shutdown via `signal.Notify` and error channel |
+| `cmd/analyze` | `main.go` | One-shot CLI: reads findings file and calls Granite |
 
 **Test results:**
 ```
-backend/internal/api       37 tests  PASS  coverage: 69.0%
-backend/internal/config     6 tests  PASS  coverage: 90.6%
-backend/internal/reports    9 tests  PASS  coverage: 80.6%
-backend/internal/watsonx    5 tests  PASS  coverage: 95.2%
+backend/internal/api       PASS  coverage: 69.0%
+backend/internal/config    PASS  coverage: 90.6%
+backend/internal/reports   PASS  coverage: 80.6%
+backend/internal/watsonx   PASS  coverage: 95.2%
 ```
 
 ---
 
 ### Task 06 — watsonx.ai Granite Integration
 
-**Bob capability:** API integration  
-**Evidence:** `bob_sessions/task06_watsonx_integration_summary.md`  
-**Screenshots:** `bob_sessions/task06_watsonx_integration_summary.png`
+**Bob capability:** API integration
+**Evidence:** `bob_sessions/task06_watsonx_integration_summary.md`
+**Screenshot:** `bob_sessions/task06_watsonx_integration_summary.png`
 
-Bob completed `backend/internal/watsonx/client.go` against the current
-watsonx.ai REST API:
+Bob completed `backend/internal/watsonx/client.go` against the watsonx.ai
+REST API:
 
 - IAM token exchange (`POST /identity/token`) with 30-second timeout.
-- Granite inference call (`POST /ml/v1/text/generation`) with prompt
-  construction, non-200 handling, empty-result detection, and JSON error
-  handling.
+- Granite inference call (`POST /ml/v1/text/generation`) with structured
+  prompt construction, non-200 error handling, and empty-result detection.
 - Authorization header never logged.
-- `backend/internal/config/config.go` extended with `WATSONX_API_KEY`,
-  `WATSONX_PROJECT_ID`, `WATSONX_URL`, and `WATSONX_MODEL_ID` vars.
-- `backend/cmd/analyze/main.go` updated as a standalone CLI tool.
-- All existing tests continue to pass; watsonx coverage at 95.2%.
+- Config extended with `IBM_CLOUD_API_KEY`, `WATSONX_PROJECT_ID`,
+  `WATSONX_URL`, and `WATSONX_MODEL_ID` variables.
+- `backend/cmd/analyze/main.go` implemented as a standalone CLI tool that
+  writes `reports/granite-risk-assessment.md` and
+  `reports/granite-risk-assessment.json`.
+- All tests continue to pass; watsonx package coverage at 95.2%.
 
 ---
 
 ### Task 07 — Frontend Dashboard
 
-**Bob capability:** Frontend development  
-**Evidence:** `bob_sessions/task07_frontend_summary.png.md`  
-**Screenshots:** `bob_sessions/task07_frontend_summary.png`
+**Bob capability:** Code generation
+**Evidence:** `bob_sessions/task07_frontend_summary.png.md`
+**Screenshot:** `bob_sessions/task07_frontend_summary.png`
 
-Bob built the single-page DeploySure dashboard using only vanilla
+Bob built the single-page DeploySure dashboard using vanilla
 HTML/CSS/JavaScript — no external libraries or frameworks.
-
-**Files:**
 
 | File | Content |
 |---|---|
-| `frontend/index.html` | Semantic HTML, all required element IDs, no external assets |
+| `frontend/index.html` | Semantic HTML, all required element IDs |
 | `frontend/styles.css` | Responsive layout, severity colour coding, loading states |
-| `frontend/app.js` | Fetch calls to all four API endpoints; POST to `/api/v1/granite/analyze` |
+| `frontend/app.js` | Fetch calls to all API endpoints; POST to `/api/v1/granite/analyze` |
 
-Post-generation verification confirmed:
-- Every `getElementById` reference in `app.js` present in `index.html`.
-- No external libraries referenced.
-- All four required API endpoints called.
-- POST used for the Granite endpoint.
+Post-generation verification confirmed every `getElementById` reference in
+`app.js` is present in `index.html`, and all required API endpoints are called.
 
 ---
 
 ### Task 08 — Remediation Plan (Human Approval Gate)
 
-**Bob capability:** Analysis and planning  
-**Evidence:** `bob_sessions/task08_remediation_plan_summary.png.md`  
-**Screenshots:** `bob_sessions/task08_remediation_plan_summary.png`
+**Bob capability:** Analysis and planning
+**Evidence:** `bob_sessions/task08_remediation_plan_summary.png.md`
+**Screenshot:** `bob_sessions/task08_remediation_plan_summary.png`
 
-Bob read the three analysis artefacts (`findings-before.json`,
-`release-readiness-before.md`, `granite-risk-assessment.json`) and produced
-`reports/remediation-plan.md` covering all 41 findings.
+Bob read `reports/findings-before.json`, `reports/release-readiness-before.md`,
+and `reports/granite-risk-assessment.json` and produced
+`reports/remediation-plan.md` covering all 41 findings across 36 remediation
+entries (REM-001 → REM-036), each containing:
 
-**33 remediation entries (REM-001 → REM-036)** — each containing:
 - Finding ID and severity
 - Affected file and line
-- Proposed change (with code diff)
-- Reason
-- Validation command
+- Proposed change with code or YAML diff
+- Reason and validation command
 - Potential risk
-
-**Breakdown by severity:**
 
 | Priority | Remediations | Key items |
 |---|---|---|
 | Blocker (5) | REM-001 – REM-005 | `GET /health`, pod `securityContext`, `livenessProbe`, resource limits, `readOnlyRootFilesystem` |
 | High (13) | REM-006 – REM-015 | Pin Dockerfile image, `USER` directive, fix silent JSON error, fix `go.mod` version, 3 missing tests |
-| Medium (15) | REM-016 – REM-028 | Buffer-first encoding, `WriteHeader`, PORT validation, configurable timeouts, distroless image |
-| Low (8) | REM-029 – REM-036 | Dead code removal, `slog` adoption, context propagation, expanded test coverage |
-
-A consolidated execution order table (33 steps) sequences changes so no
-dependency is applied before its prerequisite.
+| Medium (15) | REM-016 – REM-028 | Buffer-first encoding, `WriteHeader`, PORT validation, configurable timeouts |
+| Low (8) | REM-029 – REM-036 | Dead code, log format consistency, context propagation |
 
 **`sample-app/` was not modified. Bob waited for explicit human approval.**
 
 ---
 
-### Task 09 — Remediation (Agent Mode)
+### Task 09 — Remediation
 
-**Bob capability:** Agent mode  
-**Evidence:** `bob_sessions/task09_remediation_summary.png.md`  
+**Bob capability:** Agent mode
+**Evidence:** `bob_sessions/task09_remediation_summary.png.md`
 **Screenshots:** `bob_sessions/task09_remediation_summary.png`,
 `bob_sessions/task09_remediation_summary copy.png`
 
 After explicit human approval, Bob applied all approved remediations to
 `sample-app/`:
 
-**Blockers resolved (5/5):**
+**Blockers resolved (5 / 5):**
 
 | REM | Finding | Change |
 |---|---|---|
-| REM-001 | DC-001 | Added `GET /health` endpoint (`handlers/health.go`) |
-| REM-002 | DC-003 / DP-006 | Added `runAsNonRoot: true` pod securityContext to `k8s/deployment.yaml` |
-| REM-003 | DC-004 / DP-005 | Added `livenessProbe` targeting `GET /health` |
+| REM-001 | DC-001 | Added `GET /health` endpoint (`health.go` + registered in `router.go`) |
+| REM-002 | DC-003 / DP-006 | Added `runAsNonRoot: true` + `runAsUser: 1000` to pod `securityContext` |
+| REM-003 | DC-004 / DP-005 | Added `livenessProbe` targeting `GET /health:8080` |
 | REM-004 | DC-005 / DP-003/004 | Added CPU/memory `requests` and `limits` |
-| REM-005 | DC-006 | Added `readOnlyRootFilesystem: true` to container securityContext |
+| REM-005 | DC-006 | Added `readOnlyRootFilesystem: true` + `allowPrivilegeEscalation: false` |
 
-**High severity resolved (5 unique + 3 duplicates):**
-- REM-006: Pinned Dockerfile builder base image (removed floating `:latest`)
-- REM-007: Added non-root `USER` directive to Dockerfile
+**High severity resolved (8):**
+- REM-006 / REM-007: Pinned Dockerfile builder image; added non-root `USER` directive
 - REM-008: Fixed silent `json.Encoder` error in `ReadinessHandler`
-- REM-009: Fixed invalid Go version in `go.mod`
-- REM-010 – REM-012: Added missing unit tests
+- REM-009: Fixed invalid Go version in `go.mod` (`1.27.0` → `1.22.0`)
+- REM-010 – REM-012: Added `TestSeedOrders`, `TestOrdersHandler_EncoderError`, and `TestBuildServer`
 
-**Validation results post-remediation:**
+**Validation results:**
 ```
-go build ./sample-app/...     PASS
-go test ./sample-app/...      PASS  (all new tests green)
-go vet ./sample-app/...       PASS  (0 issues)
+gofmt     PASS — no files need reformatting
+go vet    PASS — 0 issues
+go test   PASS — 14 tests, 0 failures
+coverage: cmd/server 2.1% (was 0.0%), internal/handlers 93.9%
 ```
 
-Readiness probe preserved unchanged. Out-of-scope findings (medium/low)
-documented but not applied to keep diff minimal.
+Out-of-scope medium/low findings documented in `reports/remediation-summary.md`
+but not applied, keeping the diff minimal.
 
 ---
 
 ### Task 10 — Final Validation
 
-**Bob capability:** Parallel subagents  
-**Evidence:** `task10_final_validation_summary.md` (repository root)  
-**Screenshots:** `bob_sessions/task10_final_validation_summary.png`
+**Bob capability:** Parallel subagents
+**Evidence:** `task10_final_validation_summary.md` (repository root)
+**Screenshot:** `bob_sessions/task10_final_validation_summary.png`
 
-Bob re-ran the four specialized subagents against the remediated `sample-app/`
+Bob re-ran the four specialised subagents against the remediated `sample-app/`
 and confirmed all blocker and high-severity findings were resolved.
 
-See `task10_final_validation_summary.md` for the full before/after comparison
-and release-readiness decision.
+| Metric | Before | After |
+|---|---|---|
+| Blockers | 5 | **0** |
+| High | 13 | **1** (partially resolved) |
+| Medium | 15 | 13 |
+| Low | 8 | 7 |
+| Total findings | 41 | **21** |
+| Release decision | ❌ BLOCKED | ⚠️ CONDITIONAL PASS |
+| Tests | 7 pass | **14 pass** |
+
+Files produced:
+- `reports/findings-after.json`
+- `reports/code-findings-after.json`
+- `reports/test-findings-after.json`
+- `reports/deployment-findings-after.json`
+- `reports/document-findings-after.json`
+- `reports/release-readiness-after.md`
+- `reports/hackathon-impact.md`
 
 ---
 
@@ -357,3 +380,4 @@ and release-readiness decision.
 | `bob_sessions/task09_remediation_summary copy.png` | 09 | Screenshot (alternate) |
 | `bob_sessions/task09_remediation_summary.png.md` | 09 | Session transcript |
 | `bob_sessions/task10_final_validation_summary.png` | 10 | Screenshot |
+| `task10_final_validation_summary.md` | 10 | Session transcript (repo root) |
