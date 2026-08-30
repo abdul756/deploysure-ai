@@ -14,12 +14,9 @@ spec:
       labels:
         app: orders-api
     spec:
-      # SYNTHETIC DEFECT SD-06 (runbook K-05): securityContext.runAsNonRoot
-      # is intentionally absent from both the pod spec and the container spec.
-      # A compliant manifest would include:
-      #   securityContext:
-      #     runAsNonRoot: true
-      #     runAsUser: 1000
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
       containers:
         - name: orders-api
           image: orders-api:latest
@@ -30,31 +27,23 @@ spec:
               value: "8080"
             - name: LOG_LEVEL
               value: "info"
-
-          # SYNTHETIC DEFECT SD-03 (runbook K-02): resources.limits block is
-          # intentionally absent. A compliant spec would define:
-          #   resources:
-          #     limits:
-          #       cpu: "500m"
-          #       memory: "128Mi"
-          # This defect is seeded to be detected by the Kubernetes review subagent.
-
-          # SYNTHETIC DEFECT SD-03b (runbook K-01): resources.requests block
-          # is also intentionally absent. A compliant spec would define:
-          #   resources:
-          #     requests:
-          #       cpu: "100m"
-          #       memory: "64Mi"
-
-          # SYNTHETIC DEFECT SD-04 (runbook K-03): livenessProbe targeting
-          # GET /health is intentionally absent. A compliant spec would add:
-          #   livenessProbe:
-          #     httpGet:
-          #       path: /health
-          #       port: 8080
-          #     initialDelaySeconds: 5
-          #     periodSeconds: 10
-
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "64Mi"
+            limits:
+              cpu: "500m"
+              memory: "128Mi"
+          securityContext:
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
           readinessProbe:
             httpGet:
               path: /ready

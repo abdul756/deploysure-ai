@@ -1,0 +1,7 @@
+{
+  "generated_at": "2026-08-30T03:58:03Z",
+  "model_id": "ibm/granite-4-h-small",
+  "input_file": "reports/findings-before.json",
+  "finding_count": 41,
+  "analysis_file": "reports/granite-risk-assessment.md"
+}

@@ -1,4 +1,294 @@
-/**
+# Implement the DeploySure dashboard using only:
+
+- HTML5
+- CSS3
+- vanilla JavaScript
+
+Use:
+
+- frontend/index.html
+- frontend/styles.css
+- frontend/app.js
+
+Do not use:
+
+- React
+- TypeScript
+- Node.js
+- npm
+- Vite
+- Bootstrap
+- external JavaScript libraries
+- external CSS frameworks
+
+The dashboard must include:
+
+1. Header
+   - DeploySure AI
+   - Agentic release readiness powered by IBM Bob and watsonx.ai
+
+2. Product-boundary notice
+   - IBM Bob IDE performs repository analysis and remediation.
+   - This dashboard displays Bob-generated evidence and Granite risk analysis.
+
+3. Project summary
+   - project name,
+   - last analysis time,
+   - release decision,
+   - readiness score.
+
+4. Finding cards
+   - blocker count,
+   - high count,
+   - medium count,
+   - low count.
+
+5. Findings table
+   - ID,
+   - severity,
+   - title,
+   - affected file,
+   - evidence,
+   - recommended action.
+
+6. Actions
+   - Load Before Analysis
+   - Analyze with Granite
+   - Load After Analysis
+   - Compare Before vs After
+
+7. Granite section
+   - executive summary,
+   - release decision,
+   - prioritized findings,
+   - remediation order,
+   - confidence.
+
+8. Comparison section
+   - before score,
+   - after score,
+   - before and after decisions,
+   - high-risk findings,
+   - test coverage.
+
+Use fetch() with:
+
+GET /api/v1/findings/before
+GET /api/v1/findings/after
+GET /api/v1/comparison
+POST /api/v1/granite/analyze
+
+Design requirements:
+
+- professional IBM-inspired style,
+- IBM blue accent,
+- Arial font,
+- black readable text,
+- white and light-gray background,
+- accessible contrast,
+- responsive layout,
+- severity badges,
+- loading indicator,
+- empty state,
+- API error state,
+- no fake success data,
+- no credentials,
+- no claim that the dashboard directly invokes Bob.
+
+---
+
+**Status:** active  **Date:** 2026-08-30
+
+---
+
+### 👤 User
+
+Implement the DeploySure dashboard using only:
+
+- HTML5
+- CSS3
+- vanilla JavaScript
+
+Use:
+
+- frontend/index.html
+- frontend/styles.css
+- frontend/app.js
+
+Do not use:
+
+- React
+- TypeScript
+- Node.js
+- npm
+- Vite
+- Bootstrap
+- external JavaScript libraries
+- external CSS frameworks
+
+The dashboard must include:
+
+1. Header
+   - DeploySure AI
+   - Agentic release readiness powered by IBM Bob and watsonx.ai
+
+2. Product-boundary notice
+   - IBM Bob IDE performs repository analysis and remediation.
+   - This dashboard displays Bob-generated evidence and Granite risk analysis.
+
+3. Project summary
+   - project name,
+   - last analysis time,
+   - release decision,
+   - readiness score.
+
+4. Finding cards
+   - blocker count,
+   - high count,
+   - medium count,
+   - low count.
+
+5. Findings table
+   - ID,
+   - severity,
+   - title,
+   - affected file,
+   - evidence,
+   - recommended action.
+
+6. Actions
+   - Load Before Analysis
+   - Analyze with Granite
+   - Load After Analysis
+   - Compare Before vs After
+
+7. Granite section
+   - executive summary,
+   - release decision,
+   - prioritized findings,
+   - remediation order,
+   - confidence.
+
+8. Comparison section
+   - before score,
+   - after score,
+   - before and after decisions,
+   - high-risk findings,
+   - test coverage.
+
+Use fetch() with:
+
+GET /api/v1/findings/before
+GET /api/v1/findings/after
+GET /api/v1/comparison
+POST /api/v1/granite/analyze
+
+Design requirements:
+
+- professional IBM-inspired style,
+- IBM blue accent,
+- Arial font,
+- black readable text,
+- white and light-gray background,
+- accessible contrast,
+- responsive layout,
+- severity badges,
+- loading indicator,
+- empty state,
+- API error state,
+- no fake success data,
+- no credentials,
+- no claim that the dashboard directly invokes Bob.
+
+---
+
+### 🤖 Assistant
+
+> 🔧 called: update_todo_list, list_files, glob, list_files, list_files, read_file, read_file, read_file
+
+
+
+> 🔧 **update_todo_list** — 
+[-] Explore existing project structure and API contracts
+[ ] Create frontend/index.html
+[ ] Create frontend/styles.css
+[ ] Create frontend/app.js
+[ ] Validate output
+
+
+> 🔧 **list_files** — .
+
+> 🔧 **glob** — backend/internal/api/*.go
+
+> 🔧 **list_files** — frontend
+
+> 🔧 **list_files** — backend
+
+> 🔧 **read_file** — backend/internal/api/handler.go
+
+> 🔧 **read_file** — backend/internal/api/router.go
+
+> 🔧 **read_file** — backend/internal/reports/models.go
+
+### 🤖 Assistant
+
+> 🔧 called: read_file, read_file, read_file, read_file, read_file, read_file, update_todo_list
+
+Now let me read the existing frontend files and the watsonx client to understand more context:
+
+> 🔧 **read_file** — backend/internal/reports/service.go
+
+> 🔧 **read_file** — reports/granite-risk-assessment.json
+
+> 🔧 **read_file** — frontend/index.html
+
+> 🔧 **read_file** — reports/granite-risk-assessment.md
+
+> 🔧 **read_file** — frontend/app.js
+
+> 🔧 **read_file** — frontend/styles.css
+
+> 🔧 **update_todo_list** — 
+[x] Explore existing project structure and API contracts
+[-] Create frontend/index.html
+[ ] Create frontend/styles.css
+[ ] Create frontend/app.js
+[ ] Validate output
+
+
+### 🤖 Assistant
+
+> 🔧 called: write_file, update_todo_list, write_file, update_todo_list
+
+Now I have a thorough understanding of the API contracts and data models. Let me build all three files:
+
+> 🔧 **write_file** — frontend/index.html
+
+> 🔧 **update_todo_list** — 
+[x] Explore existing project structure and API contracts
+[x] Create frontend/index.html
+[-] Create frontend/styles.css
+[ ] Create frontend/app.js
+[ ] Validate output
+
+
+> 🔧 **write_file** — frontend/styles.css
+
+> 🔧 **update_todo_list** — 
+[x] Explore existing project structure and API contracts
+[x] Create frontend/index.html
+[x] Create frontend/styles.css
+[-] Create frontend/app.js
+[ ] Validate output
+
+
+### 🤖 Assistant
+
+> 🔧 called: write_file, update_todo_list
+
+Now write the JavaScript:
+
+> 🔧 **write_file** — /**
  * DeploySure AI – dashboard application
  *
  * Communicates with the DeploySure backend API only. IBM Bob IDE performs
@@ -131,9 +421,7 @@
     return fetch(url, options).then(function (res) {
       if (!res.ok) {
         return res.text().then(function (body) {
-          var err = new Error('HTTP ' + res.status + ' – ' + (body.trim() || res.statusText));
-          err.status = res.status;
-          throw err;
+          throw new Error('HTTP ' + res.status + ' – ' + (body.trim() || res.statusText));
         });
       }
       return res.json();
@@ -369,16 +657,8 @@
         elFindingsStatus.textContent = 'Showing after-analysis findings (' + (findings ? findings.length : 0) + ' total).';
       })
       .catch(function (err) {
-        // 404 means findings-after.json does not exist yet — Bob remediation
-        // has not been run. Treat as an empty result, not an error.
-        if (err.status === 404) {
-          renderFindings([], 'after');
-          elFindingsStatus.textContent = 'No after-analysis findings yet. Run Bob remediation to generate findings-after.json.';
-          elFindingsStatus.hidden = false;
-        } else {
-          setError('Could not load after-analysis findings. ' + err.message);
-          elFindingsStatus.hidden = true;
-        }
+        setError('Could not load after-analysis findings. ' + err.message);
+        elFindingsStatus.hidden = true;
       })
       .finally(function () {
         setLoading(false);
@@ -442,3 +722,193 @@
   document.getElementById('btn-compare').addEventListener('click', compare);
 
 }());
+
+
+> 🔧 **update_todo_list** — 
+[x] Explore existing project structure and API contracts
+[x] Create frontend/index.html
+[x] Create frontend/styles.css
+[x] Create frontend/app.js
+[-] Validate output
+
+
+### 🤖 Assistant
+
+> 🔧 called: execute_command, execute_command, execute_command
+
+Now validate — check that the HTML references all IDs used in JS, no extraneous libraries, and that the CSS has no obvious syntax errors:
+
+> 🔧 **execute_command** — 
+# Check that every id referenced in app.js exists in index.html
+python3 - <<'EOF'
+import re
+
+with open('frontend/app.js') as f:
+    js = f.read()
+
+with open('frontend/index.html') as f:
+    html = f.read()
+
+# IDs used via getElementById
+js_ids = set(re.findall(r'getElementById\([\'"]([^\'"]+)[\'"]\)', js))
+# IDs declared in HTML
+html_ids = set(re.findall(r'\bid=["\']([^"\']+)["\']', html))
+
+missing = js_ids - html_ids
+if missing:
+    print("MISSING ids in HTML:", sorted(missing))
+else:
+    print("OK – all", len(js_ids), "getElementById IDs are present in index.html")
+EOF
+
+
+> 🔧 **execute_command** — 
+# Check no external libs are referenced
+python3 - <<'EOF'
+import re
+
+files = ['frontend/index.html', 'frontend/styles.css', 'frontend/app.js']
+forbidden = ['react', 'typescript', 'bootstrap', 'jquery', 'lodash', 'vue', 'angular', 'vite',
+             'node_modules', 'cdn.', 'unpkg.', 'jsdelivr']
+ok = True
+for path in files:
+    with open(path) as f:
+        content = f.read().lower()
+    for lib in forbidden:
+        if lib in content:
+            print(f"FORBIDDEN reference to '{lib}' in {path}")
+            ok = False
+if ok:
+    print("OK – no forbidden external library references found")
+EOF
+
+
+> 🔧 **execute_command** — 
+# Verify all four required API endpoints are called in app.js
+python3 - <<'EOF'
+import re
+
+with open('frontend/app.js') as f:
+    js = f.read()
+
+required = [
+    "GET /api/v1/findings/before",
+    "GET /api/v1/findings/after",
+    "GET /api/v1/comparison",
+    "POST /api/v1/granite/analyze",
+]
+
+# map to what we'd expect in fetch calls
+checks = {
+    "GET /api/v1/findings/before":  "/api/v1/findings/before",
+    "GET /api/v1/findings/after":   "/api/v1/findings/after",
+    "GET /api/v1/comparison":       "/api/v1/comparison",
+    "POST /api/v1/granite/analyze": "/api/v1/granite/analyze",
+}
+
+all_ok = True
+for label, path in checks.items():
+    if path in js:
+        print(f"  OK  {label}")
+    else:
+        print(f"  MISSING  {label}")
+        all_ok = False
+
+# Check POST is used for granite
+if "method: 'POST'" in js:
+    print("  OK  POST method set for granite/analyze")
+else:
+    print("  MISSING  POST method for granite/analyze")
+    all_ok = False
+
+if all_ok:
+    print("\nAll API calls present.")
+EOF
+
+
+### 🤖 Assistant
+
+> 🔧 called: execute_command, update_todo_list
+
+All checks pass. Let me also verify the required dashboard sections and button IDs are all in HTML:
+
+> 🔧 **execute_command** — python3 - <<'EOF'
+import re
+
+with open('frontend/index.html') as f:
+    html = f.read()
+
+sections = {
+    "Header tagline": "Agentic release readiness powered by IBM Bob and watsonx.ai",
+    "Product boundary notice": "IBM Bob IDE",
+    "Project summary": 'id="summary-section"',
+    "Finding cards": 'class="cards-grid"',
+    "Findings table": 'id="findings-section"',
+    "Actions": 'id="actions-section"',
+    "Granite section": 'id="granite-section"',
+    "Comparison section": 'id="comparison-section"',
+    "Load Before button": 'id="btn-load-before"',
+    "Analyze with Granite button": 'id="btn-analyze"',
+    "Load After button": 'id="btn-load-after"',
+    "Compare button": 'id="btn-compare"',
+    "Loading indicator": 'id="loading-indicator"',
+    "Error message div": 'id="action-error"',
+    "Empty state row": 'class="empty-state"',
+}
+
+all_ok = True
+for label, needle in sections.items():
+    if needle in html:
+        print(f"  OK  {label}")
+    else:
+        print(f"  MISSING  {label}")
+        all_ok = False
+
+if all_ok:
+    print("\nAll required sections present.")
+EOF
+
+
+> 🔧 **update_todo_list** — 
+[x] Explore existing project structure and API contracts
+[x] Create frontend/index.html
+[x] Create frontend/styles.css
+[x] Create frontend/app.js
+[x] Validate output
+
+
+### 🤖 Assistant
+
+All 15/15 required sections present, all 40 DOM IDs match, all 4 API calls wired up, zero external library references. Here's a summary of what was built:
+
+---
+
+## DeploySure Dashboard — what was implemented
+
+### [`frontend/index.html`](frontend/index.html)
+Full semantic HTML5 document with:
+- **Header** — "DeploySure AI" + the required tagline
+- **Product-boundary notice** — blue left-border callout clarifying IBM Bob performs analysis; the dashboard only displays results
+- **Project summary section** — 4-cell grid: project name, last analysis time, release decision, readiness score
+- **Finding cards** — coloured severity cards (blocker/high/medium/low) with live counts
+- **Findings table** — 6-column scrollable table: ID, severity badge, title, affected file, evidence, recommended action; starts in empty state
+- **Actions bar** — 4 buttons + loading spinner + accessible error region
+- **Granite section** — hidden until analysis runs; structured sub-fields + raw-response `<details>` disclosure
+- **Comparison section** — hidden until compare runs; two-column before/after grid with 8 metrics each
+
+### [`frontend/styles.css`](frontend/styles.css)
+- IBM Blue `#0043ce` as accent; Arial font throughout; `#161616` text on white/`#f4f4f4` backgrounds
+- 4-up severity cards with distinct colour semantics (red / orange / amber / green)
+- Severity badges reused in the table
+- Animated CSS spinner (no JS, no image)
+- Responsive grid breakpoints at 640 px for cards, granite grid, and comparison columns
+- Accessible `:focus-visible` outline on buttons; disabled state opacity
+
+### [`frontend/app.js`](frontend/app.js)
+Pure vanilla JS IIFE — no dependencies, no transpiler:
+- `apiFetch()` — wraps `fetch()`, extracts error text from non-2xx responses, throws with message
+- `renderFindings(findings, label)` — DOM-only table build via `DocumentFragment`; counts severities client-side for the cards and summary; captures `beforeFindingsText` for Granite
+- `computeScore()` / `scoreToDecision()` — weighted score (blockers −20, high −8, medium −3, low −1) → APPROVED / CONDITIONAL / BLOCKED
+- `renderGraniteAnalysis()` — regex-based structured extraction from free-text model output (executive summary, decision keyword, bullet-list findings, numbered remediation, confidence); full raw text in the `<details>` toggle
+- `renderComparison()` — populates all 8 before/after fields from the `ComparisonResult` API shape
+- Loading spinner enables/disables all 4 buttons atomically; errors surface in the `role="alert"` div

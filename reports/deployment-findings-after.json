@@ -1,0 +1,38 @@
+[
+  {
+    "id": "DP-007",
+    "category": "configuration",
+    "severity": "medium",
+    "status": "persists",
+    "title": "Deployment image uses floating :latest tag",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 22,
+    "evidence": "image: orders-api:latest",
+    "description": "The deployment manifest still uses the :latest image tag, making deployments non-reproducible. Different nodes could pull different image versions, and Kubernetes rollback guarantees are defeated because all revisions point to the same tag.",
+    "recommended_action": "Pin to a specific version tag or digest, e.g. orders-api:v1.0.0 or orders-api@sha256:..."
+  },
+  {
+    "id": "DP-008",
+    "category": "configuration",
+    "severity": "low",
+    "status": "persists",
+    "title": "Environment variables hardcoded in deployment manifest instead of ConfigMap",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 25,
+    "evidence": "env:\n  - name: PORT\n    value: \"8080\"\n  - name: LOG_LEVEL\n    value: \"info\"",
+    "description": "Configuration values are embedded directly in the deployment manifest. Using a ConfigMap allows configuration changes without modifying the deployment object and supports environment-specific overrides.",
+    "recommended_action": "Create a ConfigMap and reference values via envFrom: configMapRef or valueFrom: configMapKeyRef"
+  },
+  {
+    "id": "DP-009",
+    "category": "security",
+    "severity": "medium",
+    "status": "persists",
+    "title": "Dockerfile final stage uses debian:bookworm-slim — not distroless or scratch",
+    "file": "sample-app/deploy/Dockerfile",
+    "line": 19,
+    "evidence": "FROM debian:bookworm-slim",
+    "description": "The final image stage is based on debian:bookworm-slim, which includes a full Debian userland with shell, package manager, and system utilities. This unnecessarily increases the attack surface. Docker Gate D-04 recommends scratch or a distroless image.",
+    "recommended_action": "Change to gcr.io/distroless/base-debian12:nonroot or gcr.io/distroless/static:nonroot if no C shared libraries are needed"
+  }
+]

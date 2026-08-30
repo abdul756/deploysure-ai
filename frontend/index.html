@@ -7,30 +7,173 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
   <header>
-    <h1>DeploySure AI</h1>
-    <p class="tagline">AI-powered deployment risk analysis and mitigation</p>
+    <div class="header-inner">
+      <h1>DeploySure AI</h1>
+      <p class="tagline">Agentic release readiness powered by IBM Bob and watsonx.ai</p>
+    </div>
   </header>
 
+  <!-- ── Product-boundary notice ─────────────────────────────────────────── -->
+  <div class="notice" role="note" aria-label="Product boundary notice">
+    <strong>IBM Bob IDE</strong> performs repository analysis and remediation.
+    This dashboard displays Bob-generated evidence and Granite risk analysis.
+  </div>
+
   <main>
-    <section id="upload-section">
-      <h2>Analyze Deployment</h2>
-      <p>Upload your deployment configuration to receive an AI-generated risk report.</p>
-      <form id="analyze-form">
-        <label for="config-input">Deployment Config (YAML / JSON)</label>
-        <textarea id="config-input" name="config" rows="10" placeholder="Paste your deployment configuration here..."></textarea>
-        <button type="submit" id="analyze-btn">Analyze Risk</button>
-      </form>
+
+    <!-- ── Project summary ───────────────────────────────────────────────── -->
+    <section id="summary-section" aria-labelledby="summary-heading">
+      <h2 id="summary-heading">Project Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="summary-label">Project</span>
+          <span class="summary-value" id="summary-project">—</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Last Analysis</span>
+          <span class="summary-value" id="summary-time">—</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Release Decision</span>
+          <span class="summary-value" id="summary-decision">—</span>
+        </div>
+        <div class="summary-item">
+          <span class="summary-label">Readiness Score</span>
+          <span class="summary-value" id="summary-score">—</span>
+        </div>
+      </div>
     </section>
 
-    <section id="results-section" hidden>
-      <h2>Risk Report</h2>
-      <div id="report-output"></div>
+    <!-- ── Finding cards ─────────────────────────────────────────────────── -->
+    <section id="counts-section" aria-labelledby="counts-heading">
+      <h2 id="counts-heading">Finding Counts</h2>
+      <div class="cards-grid">
+        <div class="card card--blocker">
+          <span class="card-count" id="count-blocker">—</span>
+          <span class="card-label">Blocker</span>
+        </div>
+        <div class="card card--high">
+          <span class="card-count" id="count-high">—</span>
+          <span class="card-label">High</span>
+        </div>
+        <div class="card card--medium">
+          <span class="card-count" id="count-medium">—</span>
+          <span class="card-label">Medium</span>
+        </div>
+        <div class="card card--low">
+          <span class="card-count" id="count-low">—</span>
+          <span class="card-label">Low</span>
+        </div>
+      </div>
     </section>
+
+    <!-- ── Findings table ────────────────────────────────────────────────── -->
+    <section id="findings-section" aria-labelledby="findings-heading">
+      <h2 id="findings-heading">Findings</h2>
+      <div id="findings-status" class="status-msg" hidden></div>
+      <div class="table-wrapper" role="region" aria-label="Findings table" tabindex="0">
+        <table id="findings-table" aria-labelledby="findings-heading">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">Severity</th>
+              <th scope="col">Title</th>
+              <th scope="col">Affected File</th>
+              <th scope="col">Evidence</th>
+              <th scope="col">Recommended Action</th>
+            </tr>
+          </thead>
+          <tbody id="findings-tbody">
+            <tr id="findings-empty-row">
+              <td colspan="6" class="empty-state">No findings loaded. Use the actions below to load an analysis.</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── Actions ───────────────────────────────────────────────────────── -->
+    <section id="actions-section" aria-labelledby="actions-heading">
+      <h2 id="actions-heading">Actions</h2>
+      <div id="loading-indicator" class="loading" hidden aria-live="polite" aria-label="Loading">
+        <span class="spinner" aria-hidden="true"></span> Loading…
+      </div>
+      <div class="actions-row">
+        <button id="btn-load-before" class="btn btn--primary">Load Before Analysis</button>
+        <button id="btn-analyze" class="btn btn--primary">Analyze with Granite</button>
+        <button id="btn-load-after" class="btn btn--secondary">Load After Analysis</button>
+        <button id="btn-compare" class="btn btn--secondary">Compare Before vs After</button>
+      </div>
+      <div id="action-error" class="error-msg" hidden role="alert"></div>
+    </section>
+
+    <!-- ── Granite section ───────────────────────────────────────────────── -->
+    <section id="granite-section" aria-labelledby="granite-heading" hidden>
+      <h2 id="granite-heading">Granite Analysis</h2>
+      <div class="granite-grid">
+        <div class="granite-item">
+          <span class="granite-label">Executive Summary</span>
+          <p id="granite-summary" class="granite-value">—</p>
+        </div>
+        <div class="granite-item">
+          <span class="granite-label">Release Decision</span>
+          <span id="granite-decision" class="granite-value">—</span>
+        </div>
+        <div class="granite-item granite-item--full">
+          <span class="granite-label">Prioritized Findings</span>
+          <p id="granite-findings" class="granite-value granite-pre">—</p>
+        </div>
+        <div class="granite-item">
+          <span class="granite-label">Remediation Order</span>
+          <p id="granite-remediation" class="granite-value granite-pre">—</p>
+        </div>
+        <div class="granite-item">
+          <span class="granite-label">Confidence</span>
+          <span id="granite-confidence" class="granite-value">—</span>
+        </div>
+      </div>
+      <details class="raw-toggle">
+        <summary>Raw Granite response</summary>
+        <pre id="granite-raw"></pre>
+      </details>
+    </section>
+
+    <!-- ── Comparison section ────────────────────────────────────────────── -->
+    <section id="comparison-section" aria-labelledby="comparison-heading" hidden>
+      <h2 id="comparison-heading">Before vs After Comparison</h2>
+      <div class="comparison-grid">
+        <div class="comparison-col">
+          <h3>Before</h3>
+          <div class="comparison-stat"><span class="comparison-label">Readiness Score</span><span id="cmp-before-score" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Decision</span><span id="cmp-before-decision" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Blockers</span><span id="cmp-before-blocker" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">High</span><span id="cmp-before-high" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Medium</span><span id="cmp-before-medium" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Low</span><span id="cmp-before-low" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">High-risk Findings</span><span id="cmp-before-hrf" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Test Coverage</span><span id="cmp-before-coverage" class="comparison-value">—</span></div>
+        </div>
+        <div class="comparison-col">
+          <h3>After</h3>
+          <div class="comparison-stat"><span class="comparison-label">Readiness Score</span><span id="cmp-after-score" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Decision</span><span id="cmp-after-decision" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Blockers</span><span id="cmp-after-blocker" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">High</span><span id="cmp-after-high" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Medium</span><span id="cmp-after-medium" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Low</span><span id="cmp-after-low" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">High-risk Findings</span><span id="cmp-after-hrf" class="comparison-value">—</span></div>
+          <div class="comparison-stat"><span class="comparison-label">Test Coverage</span><span id="cmp-after-coverage" class="comparison-value">—</span></div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
-    <p>DeploySure AI &mdash; IBM Hackathon 2025</p>
+    <p>DeploySure AI &mdash; IBM Hackathon</p>
   </footer>
 
   <script src="app.js"></script>

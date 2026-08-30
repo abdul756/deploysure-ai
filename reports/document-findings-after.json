@@ -1,0 +1,26 @@
+[
+  {
+    "id": "DC-002",
+    "category": "undocumented_feature",
+    "severity": "medium",
+    "status": "persists",
+    "title": "DB_DSN environment variable used in code but still not documented",
+    "file": "docs/requirements.md",
+    "line": 102,
+    "evidence": "main.go line 38 reads DB_DSN with default 'postgres://localhost:5432/orders?sslmode=disable'. docs/requirements.md FR-34 lists PORT and LOG_LEVEL but does not mention DB_DSN.",
+    "description": "FR-34 requires all configuration to be read from environment variables with documented defaults. DB_DSN is read in code (main.go:38) but absent from the requirements documentation. The gap was present before remediation and was not in scope for the approved remediation plan.",
+    "recommended_action": "Add DB_DSN to docs/requirements.md section 3 (Configuration) specifying default value postgres://localhost:5432/orders?sslmode=disable and its purpose"
+  },
+  {
+    "id": "DC-009",
+    "category": "doc_mismatch",
+    "severity": "medium",
+    "status": "persists",
+    "title": "D-04: Final Dockerfile stage uses debian:bookworm-slim instead of distroless/scratch",
+    "file": "docs/release-runbook.md",
+    "line": 95,
+    "evidence": "D-04 requires 'scratch or a distroless image'. Dockerfile line 19: FROM debian:bookworm-slim",
+    "description": "Docker Gate D-04 recommends a minimal final stage image. The Dockerfile uses debian:bookworm-slim, which is not distroless or scratch. This was a medium finding before remediation and remains unaddressed, consistent with the approved scope (medium/low findings were not in scope).",
+    "recommended_action": "Change the final stage to gcr.io/distroless/base-debian12:nonroot or gcr.io/distroless/static:nonroot"
+  }
+]

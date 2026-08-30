@@ -1,0 +1,315 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>server: Go Coverage Report</title>
+		<style>
+			body {
+				background: black;
+				color: rgb(80, 80, 80);
+			}
+			body, pre, #legend span {
+				font-family: Menlo, monospace;
+				font-weight: bold;
+			}
+			#topbar {
+				background: black;
+				position: fixed;
+				top: 0; left: 0; right: 0;
+				height: 42px;
+				border-bottom: 1px solid rgb(80, 80, 80);
+			}
+			#content {
+				margin-top: 50px;
+			}
+			#nav, #legend {
+				float: left;
+				margin-left: 10px;
+			}
+			#legend {
+				margin-top: 12px;
+			}
+			#nav {
+				margin-top: 10px;
+			}
+			#legend span {
+				margin: 0 5px;
+			}
+			.cov0 { color: rgb(192, 0, 0) }
+.cov1 { color: rgb(128, 128, 128) }
+.cov2 { color: rgb(116, 140, 131) }
+.cov3 { color: rgb(104, 152, 134) }
+.cov4 { color: rgb(92, 164, 137) }
+.cov5 { color: rgb(80, 176, 140) }
+.cov6 { color: rgb(68, 188, 143) }
+.cov7 { color: rgb(56, 200, 146) }
+.cov8 { color: rgb(44, 212, 149) }
+.cov9 { color: rgb(32, 224, 152) }
+.cov10 { color: rgb(20, 236, 155) }
+
+		</style>
+	</head>
+	<body>
+		<div id="topbar">
+			<div id="nav">
+				<select id="files">
+				
+				<option value="file0">github.com/abdul756/deploysure-ai/sample-app/cmd/server/main.go (0.0%)</option>
+				
+				<option value="file1">github.com/abdul756/deploysure-ai/sample-app/internal/handlers/orders.go (83.3%)</option>
+				
+				<option value="file2">github.com/abdul756/deploysure-ai/sample-app/internal/handlers/readiness.go (100.0%)</option>
+				
+				<option value="file3">github.com/abdul756/deploysure-ai/sample-app/internal/handlers/router.go (100.0%)</option>
+				
+				</select>
+			</div>
+			<div id="legend">
+				<span>not tracked</span>
+			
+				<span class="cov0">not covered</span>
+				<span class="cov8">covered</span>
+			
+			</div>
+		</div>
+		<div id="content">
+		
+		<pre class="file" id="file0" style="display: none">// Package main is the entry point for the orders-api server.
+// It reads configuration from environment variables, wires the HTTP router,
+// and handles graceful shutdown on SIGTERM / SIGINT.
+package main
+
+import (
+        "context"
+        "log"
+        "net/http"
+        "os"
+        "os/signal"
+        "syscall"
+        "time"
+
+        "github.com/abdul756/deploysure-ai/sample-app/internal/handlers"
+)
+
+func main() {
+        <span class="cov0" title="0">port := os.Getenv("PORT")
+        if port == "" </span>{
+                <span class="cov0" title="0">port = "8080"
+</span>        }
+
+        // DB_DSN is read here for configuration; it is intentionally not used in
+        // this synthetic application — its presence seeds defect SD-08: the env
+        // var is consumed in code but is absent from docs/requirements.md.
+        <span class="cov0" title="0">dbDSN := os.Getenv("DB_DSN")
+        if dbDSN == "" </span>{
+                <span class="cov0" title="0">dbDSN = "postgres://localhost:5432/orders?sslmode=disable"
+</span>        }
+
+        <span class="cov0" title="0">logLevel := os.Getenv("LOG_LEVEL")
+        if logLevel == "" </span>{
+                <span class="cov0" title="0">logLevel = "info"
+</span>        }
+
+        <span class="cov0" title="0">router := handlers.NewRouter()
+</span>
+        <span class="cov0" title="0">srv := &amp;http.Server{
+                Addr:         ":" + port,
+                Handler:      router,
+                ReadTimeout:  10 * time.Second,
+                WriteTimeout: 10 * time.Second,
+                IdleTimeout:  60 * time.Second,
+</span>        }
+
+        // Start server in a goroutine so the main goroutine can block on signals.
+        <span class="cov0" title="0">go func() </span>{
+                <span class="cov0" title="0">log.Printf("level=%s msg=\"server starting\" addr=:%s", logLevel, port)
+                if err := srv.ListenAndServe(); err != nil &amp;&amp; err != http.ErrServerClosed </span>{
+                        <span class="cov0" title="0">log.Fatalf("listen: %v", err)
+</span>                }
+        }()
+
+        // Block until SIGTERM or SIGINT.
+        <span class="cov0" title="0">quit := make(chan os.Signal, 1)
+        signal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)
+        &lt;-quit
+</span>
+        <span class="cov0" title="0">log.Println("msg=\"shutdown signal received, draining requests\"")
+</span>
+        <span class="cov0" title="0">ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+        defer cancel()
+</span>
+        <span class="cov0" title="0">if err := srv.Shutdown(ctx); err != nil </span>{
+                <span class="cov0" title="0">log.Fatalf("server forced to shutdown: %v", err)
+</span>        }
+
+        <span class="cov0" title="0">log.Println("msg=\"server exited cleanly\"")</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">// Package handlers contains the HTTP handler functions for the orders-api.
+package handlers
+
+import (
+        "encoding/json"
+        "net/http"
+)
+
+// Order represents a single order record returned by the API.
+type Order struct {
+        ID       string `json:"id"`
+        Customer string `json:"customer"`
+        Item     string `json:"item"`
+        Quantity int    `json:"quantity"`
+        Status   string `json:"status"`
+}
+
+// SeedOrders returns the static list of demo orders used by OrdersHandler.
+// It is exported so that tests can verify the exact shape of the data without
+// duplicating the fixture.
+//
+// SYNTHETIC DEFECT SD-07 / FR-09:
+// SeedOrders is an exported helper function that intentionally has NO unit
+// test in handlers_test.go. This seeds the test-gap finding for the hackathon
+// demonstration. The missing test is the "one important handler error path"
+// that is left uncovered.
+func SeedOrders() []Order {
+        <span class="cov8" title="1">return []Order{
+                {ID: "ord-001", Customer: "Alice", Item: "Widget A", Quantity: 2, Status: "shipped"},
+                {ID: "ord-002", Customer: "Bob", Item: "Gadget B", Quantity: 1, Status: "processing"},
+                {ID: "ord-003", Customer: "Carol", Item: "Doohickey C", Quantity: 5, Status: "pending"},
+</span>        }
+}
+
+// OrdersHandler handles GET /api/orders and returns a JSON array of orders.
+// Any non-GET method is rejected with HTTP 405 Method Not Allowed.
+func OrdersHandler(w http.ResponseWriter, r *http.Request) {
+        <span class="cov8" title="1">if r.Method != http.MethodGet </span>{
+                <span class="cov8" title="1">http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+                return
+</span>        }
+
+        <span class="cov8" title="1">orders := SeedOrders()
+</span>
+        <span class="cov8" title="1">w.Header().Set("Content-Type", "application/json")
+        if err := json.NewEncoder(w).Encode(orders); err != nil </span>{
+                <span class="cov0" title="0">http.Error(w, "internal server error", http.StatusInternalServerError)
+                return
+</span>        }
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package handlers
+
+import (
+        "encoding/json"
+        "net/http"
+)
+
+// statusResponse is the JSON body shape used by probe endpoints.
+type statusResponse struct {
+        Status string `json:"status"`
+}
+
+// ReadinessHandler handles GET /ready and returns {"status":"ready"} with
+// HTTP 200 when the service is able to accept traffic.
+func ReadinessHandler(w http.ResponseWriter, r *http.Request) {
+        <span class="cov8" title="1">if r.Method != http.MethodGet </span>{
+                <span class="cov8" title="1">http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+                return
+</span>        }
+
+        <span class="cov8" title="1">w.Header().Set("Content-Type", "application/json")
+        json.NewEncoder(w).Encode(statusResponse{Status: "ready"})</span> //nolint:errcheck
+}
+</pre>
+		
+		<pre class="file" id="file3" style="display: none">// Package handlers wires all HTTP routes onto a single ServeMux.
+package handlers
+
+import (
+        "log"
+        "net/http"
+        "time"
+)
+
+// NewRouter constructs and returns the application ServeMux with all routes
+// registered and a request-logging middleware applied.
+//
+// Routes registered:
+//   - GET /api/orders
+//   - GET /ready
+//
+// SYNTHETIC DEFECT SD-01 / runbook check DC-01:
+// GET /health is required by docs/release-runbook.md section 3.1 and FR-32
+// but is deliberately NOT registered here. This is a seeded hackathon
+// demonstration defect to be detected by the docs-to-code consistency
+// subagent.
+func NewRouter() http.Handler {
+        <span class="cov8" title="1">mux := http.NewServeMux()
+</span>
+        <span class="cov8" title="1">mux.HandleFunc("/api/orders", OrdersHandler)
+        mux.HandleFunc("/ready", ReadinessHandler)
+</span>
+        // NOTE: /health is intentionally omitted — see SYNTHETIC DEFECT comment above.
+
+        <span class="cov8" title="1">return loggingMiddleware(mux)
+</span>}
+
+// loggingMiddleware wraps an http.Handler and logs each request method, path,
+// status code, and elapsed time using the standard log package.
+func loggingMiddleware(next http.Handler) http.Handler {
+        <span class="cov8" title="1">return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) </span>{
+                <span class="cov8" title="1">start := time.Now()
+                lrw := &amp;loggingResponseWriter{ResponseWriter: w, statusCode: http.StatusOK}
+                next.ServeHTTP(lrw, r)
+                log.Printf("method=%s path=%s status=%d duration=%s",
+                        r.Method, r.URL.Path, lrw.statusCode, time.Since(start))
+</span>        })
+}
+
+// loggingResponseWriter wraps http.ResponseWriter to capture the status code
+// written by downstream handlers so the logging middleware can record it.
+type loggingResponseWriter struct {
+        http.ResponseWriter
+        statusCode int
+}
+
+// WriteHeader captures the status code before delegating to the underlying
+// ResponseWriter.
+func (lrw *loggingResponseWriter) WriteHeader(code int) {
+        <span class="cov8" title="1">lrw.statusCode = code
+        lrw.ResponseWriter.WriteHeader(code)
+</span>}
+</pre>
+		
+		</div>
+	</body>
+	<script>
+	(function() {
+		var files = document.getElementById('files');
+		var visible;
+		files.addEventListener('change', onChange, false);
+		function select(part) {
+			if (visible)
+				visible.style.display = 'none';
+			visible = document.getElementById(part);
+			if (!visible)
+				return;
+			files.value = part;
+			visible.style.display = 'block';
+			location.hash = part;
+		}
+		function onChange() {
+			select(files.value);
+			window.scrollTo(0, 0);
+		}
+		if (location.hash != "") {
+			select(location.hash.substr(1));
+		}
+		if (!visible) {
+			select("file0");
+		}
+	})();
+	</script>
+</html>

@@ -11,21 +11,15 @@ import (
 // registered and a request-logging middleware applied.
 //
 // Routes registered:
+//   - GET /health
 //   - GET /api/orders
 //   - GET /ready
-//
-// SYNTHETIC DEFECT SD-01 / runbook check DC-01:
-// GET /health is required by docs/release-runbook.md section 3.1 and FR-32
-// but is deliberately NOT registered here. This is a seeded hackathon
-// demonstration defect to be detected by the docs-to-code consistency
-// subagent.
 func NewRouter() http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/health", HealthHandler)
 	mux.HandleFunc("/api/orders", OrdersHandler)
 	mux.HandleFunc("/ready", ReadinessHandler)
-
-	// NOTE: /health is intentionally omitted — see SYNTHETIC DEFECT comment above.
 
 	return loggingMiddleware(mux)
 }

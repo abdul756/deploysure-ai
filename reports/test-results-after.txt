@@ -1,0 +1,47 @@
+Generated: 2026-08-30
+Command: cd sample-app && go test -cover -v ./...
+
+=== gofmt ===
+No files need formatting — all clean.
+
+=== go vet ./... ===
+go vet: PASS (no issues)
+
+=== go test -cover ./... ===
+=== RUN   TestBuildServer
+--- PASS: TestBuildServer (0.00s)
+=== RUN   TestBuildServer_DefaultPortPattern
+--- PASS: TestBuildServer_DefaultPortPattern (0.00s)
+PASS
+coverage: 2.1% of statements
+ok  	github.com/abdul756/deploysure-ai/sample-app/cmd/server	coverage: 2.1% of statements
+=== RUN   TestOrdersHandler_GET
+--- PASS: TestOrdersHandler_GET (0.00s)
+=== RUN   TestOrdersHandler_MethodNotAllowed
+--- PASS: TestOrdersHandler_MethodNotAllowed (0.00s)
+=== RUN   TestOrdersHandler_EncoderError
+--- PASS: TestOrdersHandler_EncoderError (0.00s)
+=== RUN   TestSeedOrders
+--- PASS: TestSeedOrders (0.00s)
+=== RUN   TestReadinessHandler_GET
+--- PASS: TestReadinessHandler_GET (0.00s)
+=== RUN   TestReadinessHandler_MethodNotAllowed
+--- PASS: TestReadinessHandler_MethodNotAllowed (0.00s)
+=== RUN   TestHealthHandler_GET
+--- PASS: TestHealthHandler_GET (0.00s)
+=== RUN   TestHealthHandler_MethodNotAllowed
+--- PASS: TestHealthHandler_MethodNotAllowed (0.00s)
+=== RUN   TestNewRouter_OrdersRoute
+--- PASS: TestNewRouter_OrdersRoute (0.00s)
+=== RUN   TestNewRouter_ReadyRoute
+--- PASS: TestNewRouter_ReadyRoute (0.00s)
+=== RUN   TestNewRouter_HealthRoute
+--- PASS: TestNewRouter_HealthRoute (0.00s)
+=== RUN   TestNewRouter_MethodNotAllowedViaRouter
+--- PASS: TestNewRouter_MethodNotAllowedViaRouter (0.00s)
+PASS
+coverage: 93.9% of statements
+ok  	github.com/abdul756/deploysure-ai/sample-app/internal/handlers	coverage: 93.9% of statements
+
+OVERALL RESULT: 14 tests PASS, 0 FAIL
+EXIT: 0

@@ -1,0 +1,50 @@
+[
+  {
+    "id": "TC-004",
+    "category": "coverage_gap",
+    "severity": "high",
+    "status": "partially_resolved",
+    "title": "cmd/server coverage improved from 0.0% to 2.1% — main() entry path still untested",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 30,
+    "evidence": "coverage: 2.1% of statements\n\nfunc main() {\n\tport := os.Getenv(\"PORT\")\n\tif port == \"\" {\n\t\tport = \"8080\"\n\t}\n\t...\n\tquit := make(chan os.Signal, 1)\n\tsignal.Notify(quit, syscall.SIGTERM, syscall.SIGINT)\n\t<-quit\n\t...(graceful shutdown)...\n}",
+    "description": "The buildServer() helper is now tested (2 tests, covering 2.1% of statements). However main() itself — including PORT/DB_DSN/LOG_LEVEL env-var defaulting, server startup goroutine, signal handling, and graceful shutdown — remains entirely untested. These paths cover the majority of application lifecycle logic.",
+    "recommended_action": "Extract configuration parsing into a testable function; add integration tests using httptest.NewServer for the startup path; use os.Pipe or a channel-based approach to simulate signal handling"
+  },
+  {
+    "id": "TC-007",
+    "category": "missing_test",
+    "severity": "low",
+    "status": "persists",
+    "title": "Method-not-allowed tests cover only POST and DELETE",
+    "file": "sample-app/internal/handlers/handlers_test.go",
+    "line": 40,
+    "evidence": "func TestOrdersHandler_MethodNotAllowed(t *testing.T) {\n\treq := httptest.NewRequest(http.MethodPost, \"/api/orders\", nil)\n...\nfunc TestNewRouter_MethodNotAllowedViaRouter(t *testing.T) {\n\treq := httptest.NewRequest(http.MethodDelete, \"/api/orders\", nil)",
+    "description": "Tests verify 405 for POST (line 41) and DELETE (line 222) only. HTTP methods PUT, PATCH, and HEAD are not tested for the method-not-allowed contract. The 405 behaviour is under-specified in the test suite.",
+    "recommended_action": "Use table-driven tests iterating over []string{http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete} and asserting HTTP 405 for each on all relevant handlers"
+  },
+  {
+    "id": "TC-009",
+    "category": "coverage_gap",
+    "severity": "medium",
+    "status": "new",
+    "title": "HealthHandler json.Encoder error branch has 0% coverage",
+    "file": "sample-app/internal/handlers/health.go",
+    "line": 17,
+    "evidence": "if err := json.NewEncoder(w).Encode(map[string]string{\"status\": \"ok\"}); err != nil {\n\t\thttp.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)\n\t}",
+    "description": "HealthHandler (added during remediation) has the same json.Encoder error guard pattern as OrdersHandler, but no test exercises this error path. Unlike OrdersHandler which gained TestOrdersHandler_EncoderError, HealthHandler's HTTP 500 error branch is unreachable with the current test suite.",
+    "recommended_action": "Add TestHealthHandler_EncoderError using the same failingWriter pattern as TestOrdersHandler_EncoderError to verify HTTP 500 on encode failure"
+  },
+  {
+    "id": "TC-010",
+    "category": "coverage_gap",
+    "severity": "medium",
+    "status": "new",
+    "title": "ReadinessHandler json.Encoder error branch has 0% coverage",
+    "file": "sample-app/internal/handlers/readiness.go",
+    "line": 23,
+    "evidence": "if err := json.NewEncoder(w).Encode(statusResponse{Status: \"ready\"}); err != nil {\n\t\thttp.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)\n\t\treturn\n\t}",
+    "description": "ReadinessHandler's json.Encoder error guard (added during remediation of CQ-001) has never been executed by any test. The error path is unreachable with a standard httptest.ResponseRecorder. While the HealthHandler has the same gap (TC-009), ReadinessHandler's gap pre-dates the remediation cycle.",
+    "recommended_action": "Add TestReadinessHandler_EncoderError using the failingWriter pattern to verify HTTP 500 on encode failure, consistent with TestOrdersHandler_EncoderError"
+  }
+]

@@ -1,3 +1,3 @@
 module github.com/abdul756/deploysure-ai/sample-app
 
-go 1.27.0
+go 1.22.0

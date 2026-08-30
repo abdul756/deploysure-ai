@@ -15,6 +15,18 @@ import (
 	"github.com/abdul756/deploysure-ai/sample-app/internal/handlers"
 )
 
+// buildServer constructs an *http.Server with the application router and
+// standard timeouts. It is exported for testing via main_test.go.
+func buildServer(port string) *http.Server {
+	return &http.Server{
+		Addr:         ":" + port,
+		Handler:      handlers.NewRouter(),
+		ReadTimeout:  10 * time.Second,
+		WriteTimeout: 10 * time.Second,
+		IdleTimeout:  60 * time.Second,
+	}
+}
+
 func main() {
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -22,8 +34,7 @@ func main() {
 	}
 
 	// DB_DSN is read here for configuration; it is intentionally not used in
-	// this synthetic application — its presence seeds defect SD-08: the env
-	// var is consumed in code but is absent from docs/requirements.md.
+	// this synthetic application.
 	dbDSN := os.Getenv("DB_DSN")
 	if dbDSN == "" {
 		dbDSN = "postgres://localhost:5432/orders?sslmode=disable"
@@ -34,15 +45,7 @@ func main() {
 		logLevel = "info"
 	}
 
-	router := handlers.NewRouter()
-
-	srv := &http.Server{
-		Addr:         ":" + port,
-		Handler:      router,
-		ReadTimeout:  10 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  60 * time.Second,
-	}
+	srv := buildServer(port)
 
 	// Start server in a goroutine so the main goroutine can block on signals.
 	go func() {
