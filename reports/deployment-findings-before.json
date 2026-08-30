@@ -1,0 +1,90 @@
+[
+  {
+    "id": "DP-001",
+    "category": "security",
+    "severity": "high",
+    "title": "Container runs as root — no USER directive in Dockerfile",
+    "file": "sample-app/deploy/Dockerfile",
+    "line": 43,
+    "evidence": "ENTRYPOINT [\"/app/orders-api\"] # No USER directive present in the Dockerfile",
+    "description": "The Dockerfile has no USER directive and therefore executes as root (UID 0). This violates the principle of least privilege and is flagged as synthetic defect SD-02. Running as root greatly increases the blast radius of any container escape or application vulnerability.",
+    "recommended_action": "Add a non-root user in the final stage: RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser && USER appuser"
+  },
+  {
+    "id": "DP-002",
+    "category": "security",
+    "severity": "high",
+    "title": "Builder base image uses floating :latest tag",
+    "file": "sample-app/deploy/Dockerfile",
+    "line": 10,
+    "evidence": "FROM golang:latest AS builder",
+    "description": "Using the :latest tag makes builds non-reproducible and can introduce unvetted changes to the build environment. Flagged as synthetic defect SD-01.",
+    "recommended_action": "Pin to a specific version and digest, e.g.: FROM golang:1.22.4-bookworm AS builder"
+  },
+  {
+    "id": "DP-003",
+    "category": "reliability",
+    "severity": "high",
+    "title": "No CPU or memory resource limits defined",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 24,
+    "evidence": "- name: orders-api\n  image: orders-api:latest\n  ports:\n    - containerPort: 8080\n  # No resources block present",
+    "description": "Container has no resource limits. Without limits a runaway container can exhaust node resources, causing cascading failures across the cluster. Flagged as synthetic defect SD-03b.",
+    "recommended_action": "Add: resources: { limits: { cpu: '500m', memory: '128Mi' }, requests: { cpu: '100m', memory: '64Mi' } }"
+  },
+  {
+    "id": "DP-004",
+    "category": "reliability",
+    "severity": "high",
+    "title": "No CPU or memory resource requests defined",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 24,
+    "evidence": "- name: orders-api\n  image: orders-api:latest\n  # No resources.requests block",
+    "description": "Without resource requests, the Kubernetes scheduler cannot make informed placement decisions, leading to node overcommitment. Flagged as synthetic defect SD-03.",
+    "recommended_action": "Add: resources: { requests: { cpu: '100m', memory: '64Mi' } }"
+  },
+  {
+    "id": "DP-005",
+    "category": "reliability",
+    "severity": "high",
+    "title": "Missing livenessProbe on container",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 24,
+    "evidence": "- name: orders-api\n  # No livenessProbe defined",
+    "description": "Without a livenessProbe Kubernetes cannot detect a hung or deadlocked application and will not restart it automatically. Flagged as synthetic defect SD-04.",
+    "recommended_action": "Add: livenessProbe: { httpGet: { path: '/health', port: 8080 }, initialDelaySeconds: 5, periodSeconds: 10 }"
+  },
+  {
+    "id": "DP-006",
+    "category": "security",
+    "severity": "high",
+    "title": "Missing securityContext.runAsNonRoot on pod and container specs",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 16,
+    "evidence": "spec:\n  # SYNTHETIC DEFECT SD-06: securityContext.runAsNonRoot is intentionally absent",
+    "description": "Neither the pod spec nor the container spec sets securityContext.runAsNonRoot: true. Without this setting Kubernetes will not enforce non-root execution even if the container image runs as root.",
+    "recommended_action": "Add to pod spec: securityContext: { runAsNonRoot: true, runAsUser: 1000 }"
+  },
+  {
+    "id": "DP-007",
+    "category": "configuration",
+    "severity": "medium",
+    "title": "Deployment image uses floating :latest tag",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 25,
+    "evidence": "image: orders-api:latest",
+    "description": "The deployment manifest uses the :latest image tag which is not reproducible; different nodes could pull different versions. This also defeats Kubernetes rollback guarantees.",
+    "recommended_action": "Pin to a specific version tag or digest, e.g. orders-api:v1.0.0 or orders-api@sha256:..."
+  },
+  {
+    "id": "DP-008",
+    "category": "configuration",
+    "severity": "low",
+    "title": "Environment variables hardcoded in deployment manifest instead of ConfigMap",
+    "file": "sample-app/deploy/deployment.yaml",
+    "line": 28,
+    "evidence": "env:\n  - name: PORT\n    value: \"8080\"\n  - name: LOG_LEVEL\n    value: \"info\"",
+    "description": "Configuration values are embedded directly in the deployment manifest. Using a ConfigMap would allow configuration changes without modifying the deployment manifest and supports environment-specific overrides.",
+    "recommended_action": "Create a ConfigMap for these values and reference them via envFrom: configMapRef or valueFrom: configMapKeyRef"
+  }
+]

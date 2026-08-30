@@ -1,0 +1,60 @@
+$ go test ./...
+?   	github.com/abdul756/deploysure-ai/sample-app/cmd/server	[no test files]
+ok  	github.com/abdul756/deploysure-ai/sample-app/internal/handlers	(cached)
+
+$ go test -cover ./...
+	github.com/abdul756/deploysure-ai/sample-app/cmd/server		coverage: 0.0% of statements
+ok  	github.com/abdul756/deploysure-ai/sample-app/internal/handlers	(cached)	coverage: 94.4% of statements
+
+$ go test -v ./...
+?   	github.com/abdul756/deploysure-ai/sample-app/cmd/server	[no test files]
+=== RUN   TestOrdersHandler_GET
+--- PASS: TestOrdersHandler_GET (0.00s)
+=== RUN   TestOrdersHandler_MethodNotAllowed
+--- PASS: TestOrdersHandler_MethodNotAllowed (0.00s)
+=== RUN   TestReadinessHandler_GET
+--- PASS: TestReadinessHandler_GET (0.00s)
+=== RUN   TestReadinessHandler_MethodNotAllowed
+--- PASS: TestReadinessHandler_MethodNotAllowed (0.00s)
+=== RUN   TestNewRouter_OrdersRoute
+2026/08/30 06:30:48 method=GET path=/api/orders status=200 duration=9.36µs
+--- PASS: TestNewRouter_OrdersRoute (0.00s)
+=== RUN   TestNewRouter_ReadyRoute
+2026/08/30 06:30:48 method=GET path=/ready status=200 duration=3.251µs
+--- PASS: TestNewRouter_ReadyRoute (0.00s)
+=== RUN   TestNewRouter_MethodNotAllowedViaRouter
+2026/08/30 06:30:48 method=DELETE path=/api/orders status=405 duration=2.004µs
+--- PASS: TestNewRouter_MethodNotAllowedViaRouter (0.00s)
+PASS
+ok  	github.com/abdul756/deploysure-ai/sample-app/internal/handlers	0.003s
+
+$ go test -v -cover ./...
+	github.com/abdul756/deploysure-ai/sample-app/cmd/server		coverage: 0.0% of statements
+=== RUN   TestOrdersHandler_GET
+--- PASS: TestOrdersHandler_GET (0.00s)
+=== RUN   TestOrdersHandler_MethodNotAllowed
+--- PASS: TestOrdersHandler_MethodNotAllowed (0.00s)
+=== RUN   TestReadinessHandler_GET
+--- PASS: TestReadinessHandler_GET (0.00s)
+=== RUN   TestReadinessHandler_MethodNotAllowed
+--- PASS: TestReadinessHandler_MethodNotAllowed (0.00s)
+=== RUN   TestNewRouter_OrdersRoute
+2026/08/30 06:32:57 method=GET path=/api/orders status=200 duration=9.126µs
+--- PASS: TestNewRouter_OrdersRoute (0.00s)
+=== RUN   TestNewRouter_ReadyRoute
+2026/08/30 06:32:57 method=GET path=/ready status=200 duration=3.145µs
+--- PASS: TestNewRouter_ReadyRoute (0.00s)
+=== RUN   TestNewRouter_MethodNotAllowedViaRouter
+2026/08/30 06:32:57 method=DELETE path=/api/orders status=405 duration=2.102µs
+--- PASS: TestNewRouter_MethodNotAllowedViaRouter (0.00s)
+PASS
+coverage: 94.4% of statements
+ok  	github.com/abdul756/deploysure-ai/sample-app/internal/handlers	0.003s	coverage: 94.4% of statements
+
+Summary:
+  Tests run:   7
+  Passed:      7
+  Failed:      0
+  Skipped:     0
+  cmd/server:  0.0% (no test files)
+  handlers:    94.4%

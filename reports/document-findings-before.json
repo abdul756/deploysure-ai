@@ -1,0 +1,112 @@
+[
+  {
+    "id": "DC-001",
+    "category": "doc_mismatch",
+    "severity": "blocker",
+    "title": "GET /health endpoint required by FR-32 and runbook K-03/3.1 but not implemented",
+    "file": "docs/requirements.md",
+    "line": 100,
+    "evidence": "FR-32: The application MUST expose GET /health returning {\"status\":\"ok\"} with HTTP 200. Router.go comment: // SD-01: GET /health is deliberately NOT registered here.",
+    "description": "docs/requirements.md FR-32 and docs/release-runbook.md sections 3.1 and 5 (K-03, K-05) all require GET /health. The route is explicitly omitted from sample-app/internal/handlers/router.go (annotated as synthetic defect SD-01). Both the liveness probe and the readiness contract depend on this endpoint.",
+    "recommended_action": "Implement a HealthHandler and register mux.HandleFunc(\"/health\", HealthHandler) in NewRouter()"
+  },
+  {
+    "id": "DC-002",
+    "category": "undocumented_feature",
+    "severity": "medium",
+    "title": "DB_DSN environment variable used in code but not documented",
+    "file": "docs/requirements.md",
+    "line": 102,
+    "evidence": "FR-34: All configuration (port, log level, database DSN) MUST be read from environment variables with documented defaults. main.go line 27: dbDSN := os.Getenv(\"DB_DSN\")",
+    "description": "FR-34 states all configuration must be documented. The code reads DB_DSN at main.go:27 with a default Postgres DSN, but docs/requirements.md does not list DB_DSN among the documented environment variables. Annotated as synthetic defect SD-08.",
+    "recommended_action": "Add DB_DSN documentation to docs/requirements.md section 3 specifying default value postgres://localhost:5432/orders?sslmode=disable"
+  },
+  {
+    "id": "DC-003",
+    "category": "doc_mismatch",
+    "severity": "blocker",
+    "title": "K-05: securityContext.runAsNonRoot absent from deployment.yaml",
+    "file": "docs/release-runbook.md",
+    "line": 111,
+    "evidence": "K-05: Non-root security context — securityContext.runAsNonRoot: true on the pod or container spec. deployment.yaml comment: SYNTHETIC DEFECT SD-06: securityContext.runAsNonRoot is intentionally absent.",
+    "description": "docs/release-runbook.md section 5 Kubernetes Gate requires K-05 to pass before release. sample-app/deploy/deployment.yaml explicitly omits the securityContext block. This gate will block release.",
+    "recommended_action": "Add securityContext: { runAsNonRoot: true, runAsUser: 1000 } to the pod spec in deployment.yaml"
+  },
+  {
+    "id": "DC-004",
+    "category": "doc_mismatch",
+    "severity": "blocker",
+    "title": "K-03: livenessProbe targeting GET /health absent from deployment.yaml",
+    "file": "docs/release-runbook.md",
+    "line": 109,
+    "evidence": "K-03: Liveness probe — Every container defines livenessProbe targeting GET /health. deployment.yaml comment: SYNTHETIC DEFECT SD-04: livenessProbe is intentionally absent.",
+    "description": "docs/release-runbook.md Kubernetes Gate K-03 requires a livenessProbe. deployment.yaml explicitly omits it (SD-04). This gate will block release.",
+    "recommended_action": "Add livenessProbe targeting GET /health:8080 to the container spec in deployment.yaml"
+  },
+  {
+    "id": "DC-005",
+    "category": "doc_mismatch",
+    "severity": "blocker",
+    "title": "K-01/K-02: resources.requests and resources.limits absent from deployment.yaml",
+    "file": "docs/release-runbook.md",
+    "line": 107,
+    "evidence": "K-01: Resource requests — resources.requests.cpu and resources.requests.memory required. K-02: Resource limits required. deployment.yaml comment: SYNTHETIC DEFECT SD-03/SD-03b: resources block intentionally omitted.",
+    "description": "docs/release-runbook.md Kubernetes Gate K-01 and K-02 require resource requests and limits. deployment.yaml explicitly omits the entire resources block. Both gates will block release.",
+    "recommended_action": "Add resources: { requests: { cpu: 100m, memory: 64Mi }, limits: { cpu: 500m, memory: 128Mi } } to the container spec"
+  },
+  {
+    "id": "DC-006",
+    "category": "doc_mismatch",
+    "severity": "blocker",
+    "title": "K-06: readOnlyRootFilesystem absent from container securityContext",
+    "file": "docs/release-runbook.md",
+    "line": 112,
+    "evidence": "K-06: Read-only root filesystem — securityContext.readOnlyRootFilesystem: true on the container spec. No such setting exists in deployment.yaml.",
+    "description": "docs/release-runbook.md section 5 requires K-06 for release. deployment.yaml has no container-level securityContext and therefore does not meet this requirement.",
+    "recommended_action": "Add container securityContext: { readOnlyRootFilesystem: true } to deployment.yaml"
+  },
+  {
+    "id": "DC-007",
+    "category": "doc_mismatch",
+    "severity": "high",
+    "title": "D-02: Dockerfile base image not pinned — :latest used instead of specific version",
+    "file": "docs/release-runbook.md",
+    "line": 93,
+    "evidence": "D-02: Pinned base image — base image tag is a specific version or digest, NOT :latest. Dockerfile line 10: FROM golang:latest AS builder (SYNTHETIC DEFECT SD-01)",
+    "description": "Docker Gate D-02 requires a pinned base image. Dockerfile uses golang:latest, explicitly flagged as SD-01. This gate will block release.",
+    "recommended_action": "Change to FROM golang:1.22.4-bookworm AS builder in sample-app/deploy/Dockerfile"
+  },
+  {
+    "id": "DC-008",
+    "category": "doc_mismatch",
+    "severity": "high",
+    "title": "D-01: USER directive missing from Dockerfile — container runs as root",
+    "file": "docs/release-runbook.md",
+    "line": 92,
+    "evidence": "D-01: Non-root execution — USER directive present; value is NOT root or 0. Dockerfile comment lines 34-41: SYNTHETIC DEFECT SD-02: USER directive intentionally omitted.",
+    "description": "Docker Gate D-01 requires a non-root USER directive. Dockerfile lacks any USER directive, explicitly flagged as SD-02. This gate will block release.",
+    "recommended_action": "Add RUN adduser --system appuser && USER appuser to the final stage of the Dockerfile"
+  },
+  {
+    "id": "DC-009",
+    "category": "doc_mismatch",
+    "severity": "medium",
+    "title": "D-04: Final Dockerfile stage uses debian:bookworm-slim instead of distroless/scratch",
+    "file": "docs/release-runbook.md",
+    "line": 95,
+    "evidence": "D-04: Minimal final stage — final stage is scratch or a distroless image. Dockerfile line 23: FROM debian:bookworm-slim",
+    "description": "Docker Gate D-04 recommends a minimal final stage. The current Dockerfile uses debian:bookworm-slim which includes a full Debian userland. While debian:bookworm-slim is smaller than full Debian, it is not distroless or scratch.",
+    "recommended_action": "Change the final stage to gcr.io/distroless/base-debian12:nonroot or gcr.io/distroless/static:nonroot if no C libraries are needed"
+  },
+  {
+    "id": "DC-010",
+    "category": "missing_test",
+    "severity": "medium",
+    "title": "FR-36: SeedOrders() exported helper has no unit test",
+    "file": "docs/requirements.md",
+    "line": 104,
+    "evidence": "FR-36: The application MUST include unit tests for every exported handler and helper function. handlers_test.go comment lines 50-57: SYNTHETIC DEFECT SD-07: TestSeedOrders deliberately omitted.",
+    "description": "FR-36 requires unit tests for all exported functions. SeedOrders() (orders.go:27) is exported but has no dedicated test. The handlers_test.go file explicitly annotates this omission as SD-07.",
+    "recommended_action": "Add TestSeedOrders to handlers_test.go verifying exact count and field values of the returned slice"
+  }
+]

@@ -1,0 +1,90 @@
+[
+  {
+    "id": "TC-001",
+    "category": "missing_test",
+    "severity": "high",
+    "title": "No unit test for exported SeedOrders() function",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 27,
+    "evidence": "func SeedOrders() []Order { return []Order{ {ID: \"ord-001\", ...}, {ID: \"ord-002\", ...}, {ID: \"ord-003\", ...} } }",
+    "description": "SeedOrders() is an exported function and the canonical data fixture for /api/orders. It has no dedicated unit test. TestOrdersHandler_GET only asserts len > 0, so a mutation of SeedOrders() (wrong count, wrong status) would not be caught. The handlers_test.go file acknowledges this as seeded defect SD-07 (lines 50-57).",
+    "recommended_action": "Add TestSeedOrders that calls SeedOrders() directly and asserts exact count (3) and expected field values for each Order struct."
+  },
+  {
+    "id": "TC-002",
+    "category": "missing_error_path_test",
+    "severity": "high",
+    "title": "json.Encoder error branch in OrdersHandler has 0% coverage",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 47,
+    "evidence": "Coverage profile: orders.go:47.3,49.1 2 0 (hit count = 0). Lines: if err := json.NewEncoder(w).Encode(orders); err != nil { http.Error(w, \"internal server error\", http.StatusInternalServerError); return }",
+    "description": "The JSON encode error path (HTTP 500 response) inside OrdersHandler has never been executed by any test. httptest.NewRecorder's Write() never fails, so the branch is unreachable without injecting a broken ResponseWriter. The error path is dead in all current tests.",
+    "recommended_action": "Create a failing ResponseWriter that returns an error from Write(), pass it to OrdersHandler, and assert the response code is 500."
+  },
+  {
+    "id": "TC-003",
+    "category": "missing_test",
+    "severity": "medium",
+    "title": "No test for GET /health route — route is absent and untested",
+    "file": "sample-app/internal/handlers/router.go",
+    "line": 22,
+    "evidence": "// SD-01: GET /health is required by docs/release-runbook.md section 3.1 and FR-32 but is deliberately NOT registered here.\nfunc NewRouter() http.Handler { mux := http.NewServeMux(); mux.HandleFunc(\"/api/orders\", OrdersHandler); mux.HandleFunc(\"/ready\", ReadinessHandler); return loggingMiddleware(mux) }",
+    "description": "The router explicitly notes that /health is intentionally omitted (SD-01). There is no test that sends GET /health through the router and verifies HTTP 200. Without such a test, the missing route is invisible to the test suite.",
+    "recommended_action": "Add TestNewRouter_HealthRoute that sends GET /health through NewRouter() and asserts HTTP 200 with JSON body {\"status\":\"ok\"}. The test will fail until the handler and route are added."
+  },
+  {
+    "id": "TC-004",
+    "category": "coverage_gap",
+    "severity": "high",
+    "title": "cmd/server/main.go has 0.0% test coverage — entire entry point untested",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 18,
+    "evidence": "go test -cover ./...\n\tgithub.com/abdul756/deploysure-ai/sample-app/cmd/server\t\tcoverage: 0.0% of statements",
+    "description": "There are no test files in sample-app/cmd/server/. Env-var defaulting (PORT, DB_DSN, LOG_LEVEL), server construction, graceful shutdown, and signal handling are all untested. Total cross-package statement coverage is dragged down by this gap.",
+    "recommended_action": "Extract server configuration and construction into a testable helper function in a non-main file. Add TestBuildServer to verify address, timeouts, and handler wiring. Use an integration test with httptest.NewServer to cover the startup path."
+  },
+  {
+    "id": "TC-005",
+    "category": "coverage_gap",
+    "severity": "medium",
+    "title": "OrdersHandler function-level coverage is 81.8% due to uncovered error branch",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 37,
+    "evidence": "go test -cover ./...\nhandlers coverage: 94.4%\nOrdersHandler: 81.8% (lines 47-49, hit count 0)",
+    "description": "OrdersHandler reports 81.8% function-level coverage. The two uncovered statements are inside the json.Encode error guard (same root cause as TC-002). The 94.4% package-level metric masks this gap.",
+    "recommended_action": "Same fix as TC-002: inject a failing ResponseWriter to trigger the error branch and bring OrdersHandler to 100%."
+  },
+  {
+    "id": "TC-006",
+    "category": "missing_test",
+    "severity": "medium",
+    "title": "TestOrdersHandler_GET does not assert exact order count or field values",
+    "file": "sample-app/internal/handlers/handlers_test.go",
+    "line": 34,
+    "evidence": "if len(orders) == 0 { t.Fatal(\"expected at least one order in response\") }",
+    "description": "The test only checks len > 0. If SeedOrders() were changed to return a single empty Order{}, this test would still pass. There is no assertion on the exact count (3), IDs, customer names, statuses, or other fields.",
+    "recommended_action": "Assert len(orders) == 3 and compare each order against the values returned by SeedOrders(), or use reflect.DeepEqual between the decoded response and SeedOrders()."
+  },
+  {
+    "id": "TC-007",
+    "category": "missing_test",
+    "severity": "low",
+    "title": "Method-not-allowed tests only cover POST, not PUT/PATCH/DELETE",
+    "file": "sample-app/internal/handlers/handlers_test.go",
+    "line": 83,
+    "evidence": "func TestReadinessHandler_MethodNotAllowed(t *testing.T) { req := httptest.NewRequest(http.MethodPost, \"/ready\", nil) ... }",
+    "description": "Both TestReadinessHandler_MethodNotAllowed and TestOrdersHandler_MethodNotAllowed test only POST. Methods like PUT, PATCH, DELETE are not explicitly verified, leaving the 405 contract partially documented.",
+    "recommended_action": "Use table-driven tests iterating over []string{http.MethodPost, http.MethodPut, http.MethodPatch, http.MethodDelete} and asserting 405 for each."
+  },
+  {
+    "id": "TC-008",
+    "category": "missing_test",
+    "severity": "low",
+    "title": "TestReadinessHandler_GET does not assert Content-Type header",
+    "file": "sample-app/internal/handlers/handlers_test.go",
+    "line": 63,
+    "evidence": "func TestReadinessHandler_GET(t *testing.T) { // no Content-Type assertion }",
+    "description": "TestOrdersHandler_GET asserts Content-Type: application/json, but TestReadinessHandler_GET does not, even though readiness.go sets it explicitly. Removing the header from the handler would not be caught.",
+    "recommended_action": "Add: ct := resp.Header.Get(\"Content-Type\"); if ct != \"application/json\" { t.Fatalf(...) }"
+  }
+]

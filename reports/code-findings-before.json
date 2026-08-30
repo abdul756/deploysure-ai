@@ -1,0 +1,167 @@
+[
+  {
+    "id": "CQ-001",
+    "category": "error_handling",
+    "severity": "high",
+    "title": "Ignored error in ReadinessHandler JSON encoding",
+    "file": "sample-app/internal/handlers/readiness.go",
+    "line": 22,
+    "evidence": "json.NewEncoder(w).Encode(statusResponse{Status: \"ready\"}) //nolint:errcheck",
+    "description": "The json.NewEncoder(w).Encode() call can fail but the error is ignored with //nolint:errcheck. Any encoding error will leave the response incomplete and the client will receive invalid data. The nolint directive suppresses legitimate linter warnings.",
+    "recommended_action": "Check the error: if err := json.NewEncoder(w).Encode(...); err != nil { http.Error(w, \"internal server error\", http.StatusInternalServerError); return }"
+  },
+  {
+    "id": "CQ-002",
+    "category": "error_handling",
+    "severity": "medium",
+    "title": "http.Error after partial write in OrdersHandler has no effect",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 46,
+    "evidence": "if err := json.NewEncoder(w).Encode(orders); err != nil {\n\t\thttp.Error(w, \"internal server error\", http.StatusInternalServerError)\n\t\treturn\n\t}",
+    "description": "Calling http.Error() after json.NewEncoder.Encode() has already started writing to the ResponseWriter will not change the already-sent HTTP status code. The error handling is cosmetically present but functionally ineffective for the client.",
+    "recommended_action": "Encode to a buffer first: b, err := json.Marshal(orders); if err != nil { http.Error(...) return }; w.Write(b)"
+  },
+  {
+    "id": "CQ-003",
+    "category": "correctness",
+    "severity": "high",
+    "title": "Invalid Go version in go.mod",
+    "file": "sample-app/go.mod",
+    "line": 3,
+    "evidence": "go 1.27.0",
+    "description": "Go 1.27.0 does not exist. Go version numbers are currently in the 1.21–1.22 range. Specifying a non-existent version causes toolchain compatibility issues and indicates outdated or incorrect module metadata.",
+    "recommended_action": "Change to a real released version such as 'go 1.22' or 'go 1.21'"
+  },
+  {
+    "id": "CQ-004",
+    "category": "http_response_handling",
+    "severity": "medium",
+    "title": "Missing explicit WriteHeader(200) before body write in OrdersHandler",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 45,
+    "evidence": "w.Header().Set(\"Content-Type\", \"application/json\")\nif err := json.NewEncoder(w).Encode(orders); err != nil {",
+    "description": "The handler sets Content-Type but never explicitly calls WriteHeader(http.StatusOK). Relying on implicit 200 is fragile; explicit is more maintainable.",
+    "recommended_action": "Add w.WriteHeader(http.StatusOK) after setting headers and before writing the body"
+  },
+  {
+    "id": "CQ-005",
+    "category": "http_response_handling",
+    "severity": "medium",
+    "title": "Missing explicit WriteHeader(200) in ReadinessHandler",
+    "file": "sample-app/internal/handlers/readiness.go",
+    "line": 21,
+    "evidence": "w.Header().Set(\"Content-Type\", \"application/json\")\njson.NewEncoder(w).Encode(statusResponse{Status: \"ready\"})",
+    "description": "Same as CQ-004: implicit 200 OK. Explicit WriteHeader is a best practice.",
+    "recommended_action": "Add w.WriteHeader(http.StatusOK) after setting headers"
+  },
+  {
+    "id": "CQ-006",
+    "category": "configuration_validation",
+    "severity": "low",
+    "title": "DB_DSN environment variable read but never used",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 27,
+    "evidence": "dbDSN := os.Getenv(\"DB_DSN\")\nif dbDSN == \"\" {\n\tdbDSN = \"postgres://localhost:5432/orders?sslmode=disable\"\n}",
+    "description": "DB_DSN is parsed and defaulted but the value is never passed to any downstream component (no database connection is opened). This creates confusion about what dependencies the app actually has.",
+    "recommended_action": "Either remove the DB_DSN block or connect it to an actual database client initialization"
+  },
+  {
+    "id": "CQ-007",
+    "category": "configuration_validation",
+    "severity": "low",
+    "title": "LOG_LEVEL read but logging does not respect it",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 32,
+    "evidence": "logLevel := os.Getenv(\"LOG_LEVEL\")\nif logLevel == \"\" {\n\tlogLevel = \"info\"\n}",
+    "description": "LOG_LEVEL is read and printed but the standard log package used throughout the app does not support level filtering. The configuration has no functional effect.",
+    "recommended_action": "Either replace the standard log package with a leveled logger (e.g., slog) that respects LOG_LEVEL, or remove the variable"
+  },
+  {
+    "id": "CQ-008",
+    "category": "error_handling",
+    "severity": "medium",
+    "title": "Inconsistent lowercase HTTP error message text",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 39,
+    "evidence": "http.Error(w, \"method not allowed\", http.StatusMethodNotAllowed)",
+    "description": "Error message uses lowercase text. Standard practice is to use http.StatusText() which returns canonically capitalised strings, keeping error responses consistent across the API.",
+    "recommended_action": "Use: http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)"
+  },
+  {
+    "id": "CQ-009",
+    "category": "error_handling",
+    "severity": "medium",
+    "title": "Inconsistent lowercase HTTP error message in ReadinessHandler",
+    "file": "sample-app/internal/handlers/readiness.go",
+    "line": 17,
+    "evidence": "http.Error(w, \"method not allowed\", http.StatusMethodNotAllowed)",
+    "description": "Same as CQ-008: lowercase error text.",
+    "recommended_action": "Use: http.Error(w, http.StatusText(http.StatusMethodNotAllowed), http.StatusMethodNotAllowed)"
+  },
+  {
+    "id": "CQ-010",
+    "category": "maintainability",
+    "severity": "low",
+    "title": "HTTP server timeouts are hardcoded constants",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 42,
+    "evidence": "ReadTimeout:  10 * time.Second,\nWriteTimeout: 10 * time.Second,\nIdleTimeout:  60 * time.Second,",
+    "description": "Timeout values are not configurable. Different environments (dev vs prod) may need different tuning without code changes.",
+    "recommended_action": "Expose READ_TIMEOUT_SEC, WRITE_TIMEOUT_SEC, IDLE_TIMEOUT_SEC environment variables with the current values as defaults"
+  },
+  {
+    "id": "CQ-011",
+    "category": "graceful_shutdown",
+    "severity": "medium",
+    "title": "Shutdown grace period is hardcoded",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 62,
+    "evidence": "ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)",
+    "description": "The 30-second shutdown grace period is not configurable. Long-running requests in production may need a different timeout.",
+    "recommended_action": "Make configurable via SHUTDOWN_TIMEOUT_SEC environment variable with 30s default"
+  },
+  {
+    "id": "CQ-012",
+    "category": "error_handling",
+    "severity": "medium",
+    "title": "log.Fatalf in goroutine bypasses graceful shutdown",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 51,
+    "evidence": "log.Fatalf(\"listen: %v\", err)",
+    "description": "Calling log.Fatalf() inside a goroutine will call os.Exit(1) immediately, bypassing the defer cancel() and the graceful shutdown channel logic. In-flight requests will be terminated abruptly.",
+    "recommended_action": "Use an error channel: errCh := make(chan error, 1); go func() { if err := srv.ListenAndServe(); err != http.ErrServerClosed { errCh <- err } }(); then select on errCh and quit channel"
+  },
+  {
+    "id": "CQ-013",
+    "category": "context_usage",
+    "severity": "low",
+    "title": "Request context not propagated to downstream operations",
+    "file": "sample-app/internal/handlers/orders.go",
+    "line": 37,
+    "evidence": "func OrdersHandler(w http.ResponseWriter, r *http.Request) {",
+    "description": "Handlers do not use r.Context(). When database or external calls are added later, cancellation and deadline propagation will need to be retrofitted.",
+    "recommended_action": "Establish the pattern now: pass r.Context() to any downstream calls as they are added"
+  },
+  {
+    "id": "CQ-014",
+    "category": "maintainability",
+    "severity": "low",
+    "title": "Inconsistent log format across main.go",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 49,
+    "evidence": "log.Printf(\"level=%s msg=\\\"server starting\\\" addr=:%s\", logLevel, port)",
+    "description": "Line 49 uses key=value structured logging while other log lines use plain string messages. Inconsistency makes log aggregation and parsing unreliable.",
+    "recommended_action": "Adopt a single log format throughout, preferably structured (key=value or JSON)"
+  },
+  {
+    "id": "CQ-015",
+    "category": "correctness",
+    "severity": "medium",
+    "title": "PORT environment variable accepted without validation",
+    "file": "sample-app/cmd/server/main.go",
+    "line": 19,
+    "evidence": "port := os.Getenv(\"PORT\")\nif port == \"\" {\n\tport = \"8080\"\n}",
+    "description": "An invalid PORT value (non-numeric, out of range 1–65535) will cause srv.ListenAndServe() to fail with a non-obvious error at runtime rather than at startup with a clear configuration error.",
+    "recommended_action": "Validate the port value: parse as integer, check range 1–65535, and exit early with a descriptive error if invalid"
+  }
+]
